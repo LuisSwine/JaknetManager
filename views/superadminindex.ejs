@@ -67,7 +67,7 @@
                                                         <div class="button-list">
                                                             <div class="btn-group btn-group-justified">
                                                                 <a class="btn btn-primary btn-sm" href="/formLoadTicket?usuario=<%= userName.folio %>&clave=<%= deposito.folio_clave %>" title="Comprobar Deposito"><i class="ti-ticket"></i></a>
-                                                                <a class="btn btn-warning btn-sm" href="<%= deposito.enlace %>" target="_blank" title="DOCUMENTACION DEL PROYECTO"><i class="ti-files"></i></a>
+                                                                <a class="btn btn-warning btn-sm" href="<%= deposito.enlace %>" target="_blank" title="VER COMPROBANTE DE DEPOSITO"><i class="ti-files"></i></a>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -82,7 +82,7 @@
                     <div class="col-lg-6">
                         <div class="card">
                             <div class="card-title pr">
-                                <h4>Tareas Asignadas</h4>
+                                <h4>Tareas Asignadas (<a href="/misTareas?folio=<%= userName.folio  %>" >Ver Todo</a>)</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -116,10 +116,13 @@
                                                         <div class="btn-group btn-group-justified">
                                                             <button class="btn btn-primary btn-sm" onclick="showInfoTarea('<%= tarea.descripcion %>')"><i class="ti-info"></i></button>
                                                             <% if(tarea.folio_tipo == 1){%>
-                                                            <a class="btn btn-success btn-sm" href="" title="Subir reporte"><i class="ti-files"></i></a>
+                                                            <button class="btn btn-success btn-sm" onclick="subirReporte('<%= tarea.folio_tarea %>', '<%= userName.folio %>')" title="Subir reporte"><i class="ti-files"></i></button>
                                                             <%}else if(tarea.folio_tipo == 2){%>
                                                             <a class="btn btn-success btn-sm" href="" title="Marcar como completada"><i class="ti-check"></i></a>
-                                                            <%}%> 
+                                                            <%}%>
+                                                            <% if(tarea.folio_estatus == 2 && tarea.folio_tipo != 2){ %>
+                                                            <button class="btn btn-primary btn-sm" onclick="verReporte('<%= tarea.folio_tarea %>', '<%= encodeURIComponent(JSON.stringify(reportes)) %>')" title="Ver reporte"><i class="ti-eye"></i></button>
+                                                            <%}%>  
                                                         </div>
                                                     </div>
                                                 </td>
@@ -177,6 +180,31 @@
                 icon: 'info',
                 title: 'Descripcion de la tarea',
                 text: `${descripcion}`,
+            })
+        }
+        function subirReporte(tarea, usuario){
+            Swal.fire({
+                input: 'url',
+                inputLabel: 'Ingrese la URL con el reporte',
+                inputPlaceHolder: 'Ingrese una url valida',
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Tienes que escribir algo'
+                    }else{
+                        let ruta = `/subirReporteTarea?tarea=${tarea}&usuario=${usuario}&url=${value}&flag=0`
+                        window.location = ruta
+                    }
+                }
+            })
+        }
+        function verReporte(tarea, objeto){
+            let reportes = JSON.parse(decodeURIComponent(objeto))
+
+            reportes.forEach((reporte)=>{
+                if(reporte.tarea == tarea){
+                    window.open(reporte.enlace, '_blank')
+                }
             })
         }
     </script>

@@ -73,6 +73,30 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
             return next()
         }
     }
+    exports.createTareaAdmin = async(req, res, next)=>{
+        try {
+            let data = {
+                descripcion: req.body.descripcion,
+                etapa: req.body.etapa,
+                fecha_entrega: req.body.fecha_entrega,
+                estatus: req.body.estatus,
+                tipo: req.body.tipo
+            }
+            let ruta = 'admintareas'
+
+            conexion.query("INSERT INTO op003_tareas SET ?", data, (error, results)=>{
+                if(error){
+                    throw error
+                }else{
+                    res.redirect(`/${ruta}`)
+                    return next()    
+                }
+            })    
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
     exports.validateTarea = async(req, res, next)=>{
         try {
             const tarea = req.query.tarea
@@ -162,6 +186,21 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
                     throw error;
                 }else{
                     req.tarea = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.selectTareasAdmin = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM tareas_view002", (error, fila)=>{
+                if(error){
+                    throw error;
+                }else{
+                    req.tareas = fila
                     return next()
                 }
             })
@@ -373,20 +412,50 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
             }else if(req.query.flag == 0){
                 ruta = `/?folio=${data.usuario}`
             }
-            conexion.query('INSERT INTO op004_reporte SET ?', data, (error, fila)=>{
-                if(error){
-                    throw error
+
+            //Validamos si ya existe un reporte
+            conexion.query("SELECT * FROM op004_reporte WHERE tarea = ? AND usuario = ?", [data.tarea, data.usuario], (err, fil)=>{
+                if(err){
+                    throw err
                 }else{
-                    conexion.query('UPDATE op003_tareas SET estatus = 2 WHERE folio = ?', [data.tarea], (error2, fila2)=>{
-                        if(error2){
-                            throw error2
-                        }else{
-                            res.redirect(ruta)
-                            return next()
-                        }
-                    })
+                    if(fil.length === 0){
+                        //No existe, simplemente agregamos
+                        conexion.query('INSERT INTO op004_reporte SET ?', data, (error, fila)=>{
+                            if(error){
+                                throw error
+                            }else{
+                                conexion.query('UPDATE op003_tareas SET estatus = 2 WHERE folio = ?', [data.tarea], (error2, fila2)=>{
+                                    if(error2){
+                                        throw error2
+                                    }else{
+                                        res.redirect(ruta)
+                                        return next()
+                                    }
+                                })
+                            }
+                        })
+                    }else{
+                        //Hacemos un update primero
+                        let folio = fil[0].folio
+                        conexion.query("UPDATE op004_reporte SET enlace = ?, fecha = ?, hora = ? WHERE folio = ?", [data.enlace, data.fecha, data.hora, folio], (error3, fila3)=>{
+                            if(error3){
+                                throw error3
+                            }else{
+                                conexion.query('UPDATE op003_tareas SET estatus = 2 WHERE folio = ?', [data.tarea], (error2, fila2)=>{
+                                    if(error2){
+                                        throw error2
+                                    }else{
+                                        res.redirect(ruta)
+                                        return next()
+                                    }
+                                })
+                            }
+                        })
+                    }
                 }
             })
+
+            
         } catch (error) {
             console.log(error)
             return next()
@@ -421,6 +490,121 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
                 }else{
                     req.reportes = fila
                     return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.obtenerReportesAdmin = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM op004_reporte", (error,fila)=>{
+                if(error){
+                    throw error
+                }else{
+                    req.reportes = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.asignarTareaAdmin = async(req, res, next)=>{
+        try {
+            let data ={
+                usuario: req.body.usuario,
+                tarea: req.body.tarea
+            }
+            conexion.query("INSERT INTO op014_tarea_usuario SET ?", data, function(error, results){
+                if(error){
+                    throw error
+                }else{
+                    conexion.query("UPDATE op003_tareas SET estatus = 1 WHERE folio = ?", [data.tarea], (miss, good)=>{
+                        if(miss){
+                            throw miss
+                        }else{
+                            res.redirect('/admintareas')
+                            return next()
+                        }
+                    })  
+                }
+            }) 
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+
+//ADMINISTRADOR
+    exports.declineReportAdmin = async(req, res, next)=>{
+        try {
+            let tarea = req.query.tarea
+
+            //Primero eliminamos el reporte
+            conexion.query("DELETE FROM op004_reporte WHERE tarea = ?", [tarea], (error1, fila1)=>{
+                if(error1){
+                    throw error1
+                }else{
+                    conexion.query("UPDATE op003_tareas SET estatus = 6 WHERE folio = ?", [tarea], (error2, fila2)=>{
+                        if(error2){
+                            throw error2
+                        }else{
+                            res.redirect('/admintareas')
+                            return next()
+                        }
+                    })
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.checkAsIncAdmin = async(req, res, next)=>{
+        try {
+            let tarea = req.query.tarea
+
+            conexion.query("UPDATE op003_tareas SET estatus = 5 WHERE folio = ?", [tarea], (error2, fila2)=>{
+                if(error2){
+                    throw error2
+                }else{
+                    res.redirect('/admintareas')
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.deleteTareaAdmin = async(req, res, next)=>{
+        try {
+            let tarea = req.query.tarea
+
+            //Primero validamos y eliminamos el reporte
+            conexion.query("DELETE FROM op004_reporte WHERE tarea = ?", [tarea], (error1, fila1)=>{
+                if(error1){
+                    throw error1
+                }else{
+                    //Eliminamos la Asignacion 
+                    conexion.query("DELETE FROM op014_tarea_usuario WHERE tarea = ?", [tarea], (error2, fila2)=>{
+                        if(error2){
+                            throw error2
+                        }else{
+                            //Eliminamos la tarea
+                            conexion.query("DELETE FROM op003_tareas WHERE folio = ?", [tarea], (error3, fila3)=>{
+                                if(error3){
+                                    throw error3
+                                }else{
+                                    res.redirect('/admintareas')
+                                    return next()
+                                }
+                            })
+                        }
+                    })
                 }
             })
         } catch (error) {

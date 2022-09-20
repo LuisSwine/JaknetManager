@@ -9,11 +9,10 @@
                 <div class="col-lg-8 p-r-0 title-margin-right">
                     <div class="page-header">
                         <div class="page-title">
-                            <h4>Lista de Usuarios Registrados</h4>
+                            <h4>Lista de Usuarios del Sistema</h4>
                         </div>
                     </div>
                 </div>
-                <!-- /# column -->
                 <div class="col-lg-4 p-l-0 title-margin-left">
                     <div class="page-header">
                         <div class="page-title">
@@ -24,7 +23,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- /# column -->
             </div>
             <section id="main-content">
                 <div class="row">
@@ -40,6 +38,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Folio</th>
+                                                <th>Rol</th>
                                                 <th>Nombre</th>
                                                 <th>Apellidos</th>
                                                 <th>Telefono</th>
@@ -51,7 +50,26 @@
                                         <tbody>
                                             <% usuarios.forEach((usuario)=>{ %>
                                             <tr>
+                                                <% 
+                                                let rol = ''
+                                                let color = ''
+                                                switch(parseInt(usuario.tipo_usuario)){
+                                                    case 0: 
+                                                        rol = 'SUPERADMINISTRADOR'
+                                                        color = 'primary'
+                                                        break;
+                                                    case 1: 
+                                                        rol = 'ADMINISTRADOR'
+                                                        color = 'warning'
+                                                        break;
+                                                    case 2: 
+                                                        rol = 'EMPLEADO'
+                                                        color = 'success'
+                                                        break;
+                                                }    
+                                                %> 
                                                 <td><%= usuario.folio %></td>
+                                                <td><span class="badge badge-<%= color %>"><%= rol %></span></td>
                                                 <td><%= usuario.nombres %></td>
                                                 <td><%= usuario.apellidos %></td>
                                                 <td><%= usuario.telefono %></td>
@@ -63,9 +81,11 @@
                                                             <a class="btn btn-success btn-sm" href="/adminViaticosPersonal?usuario=<%= usuario.folio %>"><i class="ti-money"></i></a>
                                                             <a class="btn btn-warning btn-sm" href="<%= usuario.documentacion %>" target="_blank"><i class="ti-link"></i></a>
                                                             <a class="btn btn-pink btn-sm" href="/reporteAsistencia?usuario=<%= usuario.folio %>&flag=1" title="Generar reporte de asistencia"><i class="ti-calendar"></i></a>
-                                                            <a class="btn btn-info btn-sm" href="/miInventario?usuario=<%= usuario.folio %>&flag=1" title="Generar reporte de asistencia"><i class="ti-briefcase"></i></a>
+                                                            <a class="btn btn-info btn-sm" href="/miInventario?usuario=<%= usuario.folio %>&flag=1" title="Inventario Personal"><i class="ti-briefcase"></i></a>
+                                                            <% if(user.tipo_usuario == 0 || (user.tipo_usuario == 1 && usuario.tipo_usuario == 2)){%>
                                                             <button class="btn btn-primary btn-sm" onclick="editUser('<%= usuario.folio %>')"><i class="ti-pencil"></i></button>
-                                                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= usuario.folio %>')"><i class="ti-trash"></i></button>
+                                                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= usuario.folio %>')"><i class="ti-trash"></i></button>    
+                                                            <%} %>
                                                         </div>
                                                     </div>
                                                 </td>   
@@ -75,6 +95,7 @@
                                         <tfoot>
                                             <tr>
                                                 <th>Folio</th>
+                                                <th>Rol</th>
                                                 <th>Nombre</th>
                                                 <th>Apellidos</th>
                                                 <th>Telefono</th>

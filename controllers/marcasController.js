@@ -171,12 +171,38 @@ exports.createBrand = async(req, res, next) =>{
 }
 exports.deleteBrand = async(req, res, next) =>{
     try {
-        conexion.query("DELETE FROM cat015_marcas WHERE folio = ?", [req.params.folio], function(error, filas){
+        let marca = req.params.folio
+        //Para eliminar las marcas de manera segura es necesario verificar proveedores y productos
+        conexion.query("SELECT folio FROM cat016_productos WHERE marca = ?", [marca], (error, fila)=>{
             if(error){
                 throw error
             }else{
-                res.redirect('/adminmarcas')
-                return next()
+                if(fila.length === 0){
+                    //Verificamos ahora los proveedores
+                    conexion.query("SELECT folio FROM op007_marca_proveedor WHERE marca = ?", [marca], (error2, fila2)=>{
+                        if(error2){
+                            throw error2
+                        }else{
+                            if(fila2.length === 0){
+                                //Podemos eliminar de manera segura
+                                conexion.query("DELETE FROM cat015_marcas WHERE folio = ?", [marca], function(error3, filas){
+                                    if(error3){
+                                        throw error3
+                                    }else{
+                                        res.redirect('/adminmarcas')
+                                        return next()
+                                    }
+                                })
+                            }else{
+                                showError(res, 'No se puede eliminar esta marca', 'Hay registrados proveedores de esta marca y eliminarla causaría errores en el sistema, primero elimine los proveedores desde el perfil de marca', 'adminmarcas')
+                                return next()
+                            }
+                        }
+                    })
+                }else{
+                    showError(res, 'No se puede eliminar esta marca', 'Hay registrados productos de esta marca y eliminarla causaría errores en el sistema, primero elimine los productos', 'adminmarcas')
+                    return next()
+                }
             }
         })
     } catch (error) {

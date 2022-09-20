@@ -5,118 +5,114 @@ const {promisify} = require('util')
 const { query } = require('../database/db')
 const { nextTick } = require('process')
 
-//procedimiento para registrarnos
-function formatoFecha(fecha, formato) {
-    const map = {
-        ss: fecha.getSeconds(),
-        nn: fecha.getMinutes(),
-        hh: fecha.getHours(),
-        dd: fecha.getDate(),
-        mm: fecha.getMonth() + 1,
-        yy: fecha.getFullYear().toString().slice(-2),
-    }
-
-    return formato.replace(/ss|nn|hh|dd|mm|yy|yyy/gi, matched => map[matched])
-}
-function showError(res, titulo, mensaje, ruta){
-    res.render('Error/showInfo', {
-        title: titulo,
-        alert: true,
-        alertTitle: 'INFORMACION',
-        alertMessage: mensaje,
-        alertIcon: 'info',
-        showConfirmButton: true,
-        timer: 8000,
-        ruta: ruta
-    })
-}
-
-//procedimiento para el login
-exports.login = async(req, res) =>{
-    try {
-        const user = req.body.user
-        const pass = req.body.pass
-
-        //Validamos que no haya campos vacios
-        if(!user || !pass){
-            res.render('login', {
-                alert: true,
-                alertTitle: 'ADVERTENCIA',
-                alertMessage: 'No puede dejar campos en blanco',
-                alertIcon: 'info',
-                showConfirmButton: true,
-                timer: 8000,
-                ruta: 'login' 
-            })
-        }else{
-            conexion.query('SELECT * FROM cat001_usuarios WHERE usuario = ?', [user], async (error, results)=>{
-                if(error){
-                    console.log(error)
-                }
-                if(results.length == 0 || !(await bcryptjs.compare(pass, results[0].pass))){
-                    res.render('login', {
-                        alert: true,
-                        alertTitle: 'ERROR',
-                        alertMessage: 'Usuario y/o contraseña incorrecta',
-                        alertIcon: 'error',
-                        showConfirmButton: true,
-                        timer: 8000,
-                        ruta: 'login' 
-                    })
-                }else{
-                    //Inicio de sesion validado
-                    const id = results[0].folio
-                    const token = jwt.sign({id: id}, process.env.JWT_SECRETO, {
-                        expiresIn: process.env.JWT_TIEMPO_EXPIRA
-                    })
-                    
-                    //Creamos el token y la cookie con el id del usuario
-                    const cookiesOptions = {
-                        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRA * 24 * 60 * 60 * 1000),
-                        httpOnly: true
-                    }
-                    res.cookie('jwt', token, cookiesOptions)
-
-                    //Redireccionamos al menu correspondiente
-                    res.render('login', {
-                        alert: true,
-                        alertTitle: 'Conexion exitosa',
-                        alertMessage: '¡INICIO DE SESION EXITOSO!',
-                        alertIcon: 'success',
-                        showConfirmButton: false,
-                        timer: 800,
-                        ruta: `?folio=${id}`
-                    })
-                }
-            })
+//FUNCIONES DE APOYO DEL SISTEMA DE CONTROLADORES
+    function formatoFecha(fecha, formato) {
+        const map = {
+            ss: fecha.getSeconds(),
+            nn: fecha.getMinutes(),
+            hh: fecha.getHours(),
+            dd: fecha.getDate(),
+            mm: fecha.getMonth() + 1,
+            yy: fecha.getFullYear().toString().slice(-2),
         }
-    } catch (error) {
-        console.log(error)
-    }
-}
 
-exports.isAuthenticated = async(req, res, next) =>{
-    if(req.cookies.jwt){
+        return formato.replace(/ss|nn|hh|dd|mm|yy|yyy/gi, matched => map[matched])
+    }
+    function showError(res, titulo, mensaje, ruta){
+        res.render('Error/showInfo', {
+            title: titulo,
+            alert: true,
+            alertTitle: 'INFORMACION',
+            alertMessage: mensaje,
+            alertIcon: 'info',
+            showConfirmButton: true,
+            timer: 8000,
+            ruta: ruta
+        })
+    }
+//MODULO #0 - INICIO DE SESION
+    exports.login = async(req, res) =>{
         try {
-            const decode = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRETO)
-            conexion.query('SELECT * FROM cat001_usuarios WHERE folio = ?', [decode.id], (error, results)=>{
-                if(!results){return next()}
-                req.user = results[0]
-                return next()
-            })
+            //Recibimos los valores del formulario y los almacenamos en constantes
+            const user = req.body.user
+            const pass = req.body.pass
+
+            if(!user || !pass){ //Validamos que no haya campos vacios
+                res.render('login', {
+                    alert: true,
+                    alertTitle: 'ADVERTENCIA',
+                    alertMessage: 'No puede dejar campos en blanco',
+                    alertIcon: 'info',
+                    showConfirmButton: true,
+                    timer: 8000,
+                    ruta: 'login' 
+                })
+            }else{ //Seleccionamos toda la información del usuario
+                conexion.query('SELECT * FROM cat001_usuarios WHERE usuario = ?', [user], async(error, results)=>{
+                    if(error) console.log(error); //En caso que haya un error en la consulta lo mostramos por consola
+                    //Validamos la contraseña ingresada por el usuario, con la correspondiente
+                    if(results.length == 0 || !(await bcryptjs.compare(pass, results[0].pass))){
+                        res.render('login', {
+                            alert: true,
+                            alertTitle: 'ERROR',
+                            alertMessage: 'Usuario y/o contraseña incorrecta',
+                            alertIcon: 'error',
+                            showConfirmButton: true,
+                            timer: 8000,
+                            ruta: 'login' 
+                        })
+                    }else{//Inicio de sesion validado
+                        //Guardamos algunos valores para generar la cookie de inicio de sesion
+                        const id = results[0].folio //Guardamos el folio del usuario
+                        const token = jwt.sign({id: id}, process.env.JWT_SECRETO, {
+                            expiresIn: process.env.JWT_TIEMPO_EXPIRA
+                        }) //Creamos un token para almacenar la información de la cookie
+                        
+                        //Creamos la cookie con el folio del usuario
+                        const cookiesOptions = {
+                            expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRA * 24 * 60 * 60 * 1000),
+                            httpOnly: true
+                        }
+                        res.cookie('jwt', token, cookiesOptions)
+
+                        //Redireccionamos al dashboard
+                        res.render('login', {
+                            alert: true,
+                            alertTitle: 'Conexion exitosa',
+                            alertMessage: '¡INICIO DE SESION EXITOSO!',
+                            alertIcon: 'success',
+                            showConfirmButton: false,
+                            timer: 800,
+                            ruta: `?folio=${id}`
+                        })
+                    }
+                })
+            }
         } catch (error) {
             console.log(error)
-            return next()
         }
-    }else{
-        res.redirect('/login')
     }
-}
-
-exports.logout = (req, res) =>{
-    res.clearCookie('jwt')
-    return res.redirect('/')
-}
+    exports.isAuthenticated = async(req, res, next) =>{
+        if(req.cookies.jwt){
+            try {
+                const decode = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRETO)
+                conexion.query('SELECT * FROM cat001_usuarios WHERE folio = ?', [decode.id], (error, results)=>{
+                    if(!results){return next()}
+                    req.user = results[0]
+                    return next()
+                })
+            } catch (error) {
+                console.log(error)
+                return next()
+            } 
+        }else{
+            res.redirect('/login')
+        }
+    }
+    exports.logout = (req, res) =>{
+        res.clearCookie('jwt')
+        return res.redirect('/')
+    }
 
 //DASHBOARD - VIATICOS
     exports.selectLatsMoves = async(req, res, next)=>{
@@ -474,6 +470,34 @@ exports.deleteContOfUbi = async(req, res, next)=>{
             return next()
         }
     }
+    exports.reporteGrlInvent = async(req, res, next)=>{
+        try {
+            if(req.query.inicio && req.query.termino){
+                let inicio = new Date(req.query.inicio)
+                let termino = new Date(req.query.termino)
+                conexion.query("SELECT * FROM movimientos_invent_view001 WHERE (fecha BETWEEN ? AND ?)", [inicio, termino], (error, filas)=>{
+                    if(error){
+                        throw error
+                    }else{
+                        req.movimientos = filas
+                        return next()
+                    }
+                })
+            }else{
+                conexion.query("SELECT * FROM movimientos_invent_view001", (error, filas)=>{
+                    if(error){
+                        throw error
+                    }else{
+                        req.movimientos = filas
+                        return next()
+                    }
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
 //FIN DEL CRUD DE INVENTARIO
 
 //CRUD DE VIATICOS
@@ -582,6 +606,21 @@ exports.deleteContOfUbi = async(req, res, next)=>{
     }
 
 //ETAPAS
+    exports.selectAllEtapas = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM etapas_view001", (error, fila)=>{
+                if(error){
+                    throw error
+                }else{
+                    req.etapas = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
     exports.selectEtapasProyecto = async(req, res, next)=>{
         try {
             conexion.query("SELECT * FROM etapas_view001 WHERE folio_proyecto = ?", [req.query.proyecto], (error, fila)=>{

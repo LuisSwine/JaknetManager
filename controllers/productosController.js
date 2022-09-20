@@ -3,6 +3,19 @@ const {promisify} = require('util')
 const { query } = require('../database/db')
 const { nextTick } = require('process')
 
+function showError(res, titulo, mensaje, ruta){
+    res.render('Error/showInfo', {
+        title: titulo,
+        alert: true,
+        alertTitle: 'INFORMACION',
+        alertMessage: mensaje,
+        alertIcon: 'info',
+        showConfirmButton: true,
+        timer: 8000,
+        ruta: ruta
+    })
+}
+
 //CRUD DE PRODUCTOS
     //Registrar un tipo de producto
     exports.createTipoProducto = async(req, res, next) =>{
@@ -157,12 +170,75 @@ const { nextTick } = require('process')
     }
     exports.deleteProduct = async(req, res, next) =>{
         try {
-            conexion.query("DELETE FROM cat016_productos WHERE folio = ?", [req.params.folio], function(error, filas){
+            //Tenemos que hacer varias validaciones para poder eliminar correctamente un producto
+            let producto = req.params.folio
+            //Primero validamos que no haya existencias en inventario
+            conexion.query("SELECT folio FROM cat020_inventario WHERE producto = ?", [producto], (error, fila)=>{
                 if(error){
                     throw error
                 }else{
-                    res.redirect('/adminproductos')
-                    return next()
+                    if(fila.length === 0){
+                        //Procedemos a la validacion en cotizaciones
+                        conexion.query("SELECT folio FROM op008_lista_productos WHERE producto = ?", [producto], (error2, fila2)=>{
+                            if(error2){
+                                throw error2
+                            }else{
+                                if(fila2.length === 0){
+                                    //ahora validamos la lista de compras
+                                    conexion.query("SELECT folio FROM op010_compras WHERE producto = ?", [producto], (error3, fila3)=>{
+                                        if(error3){
+                                            throw error3
+                                        }else{
+                                            if(fila3.length === 0){
+                                                //Ahora validamos los proyectos
+                                                conexion.query("SELECT folio FROM op011_material_proyecto WHERE producto = ?", [producto], (error4, fila4)=>{
+                                                    if(error4){
+                                                        throw error4
+                                                    }else{
+                                                        if(fila4.length === 0){
+                                                            //Por ultimo validamos el material de usuario
+                                                            conexion.query("SELECT folio FROM op013_material_usuario WHERE producto = ?", [producto], (error5, fila5)=>{
+                                                                if(error5){
+                                                                    throw error5
+                                                                }else{
+                                                                    if(fila5.length === 0){
+                                                                        //Podemos eliminar sin problemas
+                                                                        conexion.query("DELETE FROM cat016_productos WHERE folio = ?", [producto], function(error6, filas){
+                                                                            if(error6){
+                                                                                throw error6
+                                                                            }else{
+                                                                                res.redirect('/adminproductos')
+                                                                                return next()
+                                                                            }
+                                                                        })
+                                                                    }else{
+                                                                        showError(res, 'No se ha podido eliminar el producto', 'Parte de las existencias del producto las tiene un usuario, no es posible eliminarlo', 'adminproductos')
+                                                                        return next()
+                                                                    }
+                                                                }
+                                                            })
+                                                        }else{
+                                                            showError(res, 'No se ha podido eliminar el producto', 'Parte de las existencias del producto estan en algun proyecto, no es posible eliminarlo', 'adminproductos')
+                                                            return next()
+                                                        }
+                                                    }
+                                                })
+                                            }else{
+                                                showError(res, 'No se ha podido eliminar el producto', 'Hay una compra pendiente de este producto, no es posible eliminarlo', 'adminproductos')
+                                                return next()
+                                            }
+                                        }
+                                    })
+                                }else{
+                                    showError(res, 'No se ha podido eliminar el producto', 'Este producto se encuentra cotizado para algun proyecto, no es posible eliminarlo', 'adminproductos')
+                                    return next()
+                                }
+                            }
+                        })
+                    }else{
+                        showError(res, 'No se ha podido eliminar el producto', 'Este producto tiene existencias en el inventario, no es posible eliminarlo', 'adminproductos')
+                        return next()
+                    }
                 }
             })
         } catch (error) {
@@ -183,6 +259,35 @@ const { nextTick } = require('process')
                     return next()
                 }
             })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.reportePersonalInvent = async(req, res, next)=>{
+        try {
+            let usuario = req.query.usuario
+            if(req.query.inicio && req.query.termino){
+                let inicio = new Date(req.query.inicio)
+                let termino = new Date(req.query.termino)
+                conexion.query("SELECT * FROM movimientos_invent_view001 WHERE folio_usuario = ? AND (fecha BETWEEN ? AND ?)", [usuario, inicio, termino], (error, filas)=>{
+                    if(error){
+                        throw error
+                    }else{
+                        req.movimientos = filas
+                        return next()
+                    }
+                })
+            }else{
+                conexion.query("SELECT * FROM movimientos_invent_view001 WHERE folio_usuario = ?", [usuario], (error, filas)=>{
+                    if(error){
+                        throw error
+                    }else{
+                        req.movimientos = filas
+                        return next()
+                    }
+                })
+            }
         } catch (error) {
             console.log(error)
             return next()

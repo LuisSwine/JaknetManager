@@ -15,7 +15,7 @@ let ruta = `/?folio=${user.folio}`
                         </a>
                     </div>
                     <li class="label">CRM</li>
-                    
+                    <% if(user.tipo_usuario != 2){%> 
                     <li class="label">PRINCIPAL</li>
                     <li><a href="<%= ruta %> "><i class="ti-home"></i> Dashboard</a></li>
                     <li>
@@ -25,10 +25,7 @@ let ruta = `/?folio=${user.folio}`
                             <span class="sidebar-collapse-icon ti-angle-down"></span> 
                         </a>
                         <ul>
-                            <li><a href="/miPerfil?usuario=<%= user.folio %>">Perfil</a></li>
-                            <% if(user.tipo_usuario == 0 || user.tipo_usuario == 1){ %>
-                                <li><a href="/adminusers">Lista de Usuarios</a></li>
-                                <% } %> 
+                            <li><a href="/adminusers">Lista de Usuarios</a></li>
                         </ul>
                     </li>
                     <li>
@@ -42,6 +39,7 @@ let ruta = `/?folio=${user.folio}`
                             <li><a href="/admincontactos">Contactos</a></li>
                             <li><a href="/adminubicaciones">Ubicaciones</a></li>
                             <li><a href="/adminproyectos">Gestionar Proyectos</a></li>
+                            <li><a href="/admintareas">Tareas</a></li>
                         </ul>
                     </li>
                     <li>
@@ -70,7 +68,9 @@ let ruta = `/?folio=${user.folio}`
                             <li><a href="/asignacionViaticos">Asignar Viaticos</a></li>
                         </ul>
                     </li>
+                    <%} %>
                     <li class="label">PERSONAL</li>
+                    <li><a href="/miPerfil?usuario=<%= user.folio %>"><i class="ti-user"></i> Mi Perfil</a></li>
                     <li>
                         <a class="sidebar-sub-toggle">
                             <i class="ti-money"></i>
@@ -82,6 +82,7 @@ let ruta = `/?folio=${user.folio}`
                             <li><a href="/seguimientoClaves?usuario=<%= user.folio %>">Seguimiento de Claves</a></li>
                         </ul>
                     </li>
+                    <li><a href="/misProyectos?folio=<%= user.folio %>"><i class="ti-blackboard"></i> Mis Proyectos</a></li>
                     <li><a href="/misTareas?folio=<%= user.folio %>"><i class="ti-list"></i> Mis Tareas</a></li>
                     <li><a href="/misAsistencias?usuario=<%= user.folio %>"><i class="ti-calendar"></i> Mis Asistencias</a></li>
                     <li><a href="/miInventario?usuario=<%= user.folio %>"><i class="ti-truck"></i> Mi Inventario</a></li>

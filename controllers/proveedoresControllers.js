@@ -175,12 +175,27 @@ exports.createProv = async(req, res, next) =>{
 }
 exports.deleteProv = async(req, res, next) =>{
     try {
-        conexion.query("DELETE FROM cat014_proveedores WHERE folio = ?", [req.params.folio], function(error, filas){
+        //para realizar un delete seguro es necesario verificar primero que no tenga marcas relacionadas
+        let proveedor = req.params.folio
+
+        conexion.query("SELECT folio FROM op007_marca_proveedor WHERE proveedor = ?", [proveedor], (error, fila)=>{
             if(error){
                 throw error
             }else{
-                res.redirect('/adminproveedores')
-                return next()
+                if(fila.length === 0){
+                    //Podemos eliminar de manera segura
+                    conexion.query("DELETE FROM cat014_proveedores WHERE folio = ?", [proveedor], function(error2, filas){
+                        if(error2){
+                            throw error2
+                        }else{
+                            res.redirect('/adminproveedores')
+                            return next()
+                        }
+                    })
+                }else{
+                    showError(res, 'No se puede eliminar al proveedor', 'Este proveedor provee algunas marcas que se encuentran registradas, edite esta información antes de eliminar al proveedor', 'adminproveedores')
+                    return next()
+                }
             }
         })
     } catch (error) {

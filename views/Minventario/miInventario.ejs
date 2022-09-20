@@ -42,7 +42,8 @@
                         <div class="card">
                             <div class="card-title">
                                 <div class="button-list">
-                                    <a class="btn btn-primary btn-sm" href="/moverInventUser?usuario=<%= usuario[0].folio %>&flag=<%= flag %>"><i class="ti-plus"></i>Añadir Elementos</a>
+                                    <a href="/movimientosInventarioPersonal?usuario=<%= usuario[0].folio %>&flag=<%= flag %>" class="btn btn-success btn-flat btn-addon"><i class="ti-notepad"></i>Reporte de movimientos</a>
+                                    <a class="btn btn-primary btn-flat btn-addon" href="/moverInventUser?usuario=<%= usuario[0].folio %>&flag=<%= flag %>"><i class="ti-plus"></i>Añadir Elementos</a>
                                 </div>     
                             </div>
                             <div class="bootstrap-data-table-panel">

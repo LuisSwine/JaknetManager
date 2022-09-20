@@ -78,7 +78,7 @@
                                                                 ruta = `/editarAsignacionTarea?tarea=${tarea.folio}&etapa=${etapa[0].folip}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}`
                                                             }
                                                             %>
-                                                            <a class="btn btn-warning btn-sm" href="<%= ruta %>" ><i class="ti-write"></i></a>
+                                                            <a class="btn btn-warning btn-sm" href="<%= ruta %>" title="ASIGNAR TAREA"><i class="ti-write"></i></a>
                                                             <a class="btn btn-success btn-sm" href="/editarTarea?tarea=<%= tarea.folio %>&etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>"><i class="ti-pencil-alt"></i></a>
                                                             <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= tarea.folio %>', '<%= etapa[0].folio %>', '<%= proyecto %>', '<%= cliente %>', '<%= ubicacion %>', '<%= flag %>')"><i class="ti-trash"></i></button>
                                                         </div>

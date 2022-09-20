@@ -105,12 +105,24 @@ exports.editServicio = async(req, res, next)=>{
 }
 exports.deleteServicio = async(req, res, next)=>{
     try {
-        conexion.query("DELETE FROM cat019_servicios WHERE folio = ?", [req.params.folio], function(error, filas){
+        let servicio = req.params.folio
+        //Antes de eliminar validamos que el servicio no este cotizado
+        conexion.query("SELECT folio FROM op009_lista_servicios WHERE servicio = ?", [servicio], (error, fila)=>{
             if(error){
                 throw error
             }else{
-                res.redirect('/adminservicios')
-                return next()
+                if(fila.length === 0){
+                    conexion.query("DELETE FROM cat019_servicios WHERE folio = ?", [servicio], function(error2, filas){
+                        if(error2){
+                            throw error2
+                        }else{
+                            res.redirect('/adminservicios')
+                            return next()
+                        }
+                    })
+                }else{
+                    showError(res, 'No se puede eliminar este servicio', 'Este servicio cotiza en algun proyecto, no puede eliminarse', 'adminservicios')
+                }
             }
         })
     } catch (error) {

@@ -546,3 +546,22 @@ exports.deleteCotizacion = async(req, res, next)=>{
         return next()
     }
 }
+
+//MIS PROYECTOS
+exports.selectMisProyectos = async(req, res, next)=>{
+    try {
+        let usuario = req.query.folio
+
+        conexion.query("SELECT * FROM roles_proyecto_view001 WHERE folio_usuario = ?", [usuario], (error, fila)=>{
+            if(error){
+                throw error
+            }else{
+                req.proyectos = fila
+                return next()
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return next()
+    }
+}
