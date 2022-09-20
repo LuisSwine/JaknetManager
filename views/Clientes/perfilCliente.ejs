@@ -9,7 +9,7 @@
                 <div class="col-lg-8 p-r-0 title-margin-right">
                     <div class="page-header">
                         <div class="page-title">
-                            <h1><%= cliente[0].nombre %> <i onclick="cambiarNombre('<%= cliente[0].nombre %>','<%= cliente[0].folio %>')" style="cursor: pointer" class="ti-pencil"></i></h1>
+                            <h1><%= cliente[0].nombre %> <% if(user.tipo_usuario != 2){%><i onclick="cambiarNombre('<%= cliente[0].nombre %>','<%= cliente[0].folio %>')" style="cursor: pointer" class="ti-pencil"></i><%}%></h1>
                         </div>
                     </div>
                 </div>
@@ -19,7 +19,7 @@
                         <div class="page-title">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/?folio=<%= user.folio %>">Dashboard</a></li>
-                                <li class="breadcrumb-item"><a href="/adminclients">Clientes</a></li>
+                                <% if(user.tipo_usuario != 2){%><li class="breadcrumb-item"><a href="/adminclients">Clientes</a></li><% } %> 
                                 <li class="breadcrumb-item active"><%= cliente[0].nombre %></li>
                             </ol>
                         </div>
@@ -35,7 +35,7 @@
                                 <div class="stat-icon dib"><i class="ti-info color-primary border-primary"></i>
                                 </div>
                                 <div class="stat-content dib">
-                                    <div class="stat-text">Servicio Brindado   <i onclick="cambiarServicio('<%= cliente[0].folio %>', '<%= encodeURIComponent(JSON.stringify(tiposServicios)) %>')" style="cursor: pointer" class="ti-pencil"></i></div>
+                                    <div class="stat-text">Servicio Brindado <% if(user.tipo_usuario != 2){%><i onclick="cambiarServicio('<%= cliente[0].folio %>', '<%= encodeURIComponent(JSON.stringify(tiposServicios)) %>')" style="cursor: pointer" class="ti-pencil"></i><%}%></div>
                                     <div class="stat-digit"><%= cliente[0].servicio %> </div>
                                 </div>
                             </div>
@@ -47,7 +47,7 @@
                                 <div class="stat-icon dib"><i class="ti-pin color-warning border-warning"></i>
                                 </div>
                                 <div class="stat-content dib">
-                                    <div class="stat-text">Tipo de Cliente   <i onclick="cambiarTipo('<%= cliente[0].folio %>', '<%= encodeURIComponent(JSON.stringify(tiposCliente)) %>')" style="cursor: pointer" class="ti-pencil"></i></div>
+                                    <div class="stat-text">Tipo de Cliente <% if(user.tipo_usuario != 2){%><i onclick="cambiarTipo('<%= cliente[0].folio %>', '<%= encodeURIComponent(JSON.stringify(tiposCliente)) %>')" style="cursor: pointer" class="ti-pencil"></i><%}%></div>
                                     <div class="stat-digit"><%= cliente[0].tipo %> </div>
                                 </div>
                             </div>
@@ -71,9 +71,11 @@
                                 <div class="tab-pane active" id="ubicaciones" role="tabpanel">
                                     <div class="col-lg-12">
                                         <div class="card">
+                                            <% if(user.tipo_usuario != 2){%>
                                             <div class="card-title">
                                                 <a href="/formcreateubicacion?cliente=<%= cliente[0].folio %>&flag=1" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Añadir Ubicacion</a>     
                                             </div>
+                                            <% } %> 
                                             <div class="bootstrap-data-table-panel">
                                                 <div class="table-responsive">
                                                     <table id="row-select" class="display table table-borderd table-hover">
@@ -96,7 +98,7 @@
                                                                         <div class="btn-group btn-group-justified">
                                                                             <a class="btn btn-info btn-sm" href="/perfilUbicacion?ubicacion=<%= ubicacion.folio %>&cliente=<%= cliente[0].folio%>&flag=1" title="Configuracion"><i class="ti-settings"></i></a>
                                                                             <a class="btn btn-pink btn-sm" target="_blank" href="https://www.google.com.mx/maps/search/<%= ubicacion.direccion %>" title="LOCALIZAR"><i class="ti-map-alt"></i></a>
-                                                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteUbi('<%= ubicacion.folio %>', '<%= cliente[0].folio%>')"><i class="ti-trash"></i></button>
+                                                                            <% if(user.tipo_usuario != 2){%><button class="btn btn-danger btn-sm" onclick="confirmDeleteUbi('<%= ubicacion.folio %>', '<%= cliente[0].folio%>')"><i class="ti-trash"></i></button><% } %> 
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -120,9 +122,11 @@
                                 <div class="tab-pane p-20" id="contactos" role="tabpanel">
                                     <div class="col-lg-12">
                                         <div class="card">
+                                            <% if(user.tipo_usuario != 2){%>
                                             <div class="card-title">
                                                 <a href="/formcreatecontact?cliente=<%= cliente[0].folio %>&flag=1" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Crear Contacto</a>     
                                             </div>
+                                            <% } %> 
                                             <div class="bootstrap-data-table-panel">
                                                 <div class="table-responsive">
                                                     <table id="row-select2" class="display table table-borderd table-hover">
@@ -146,8 +150,10 @@
                                                                     <div class="button-list">
                                                                         <div class="btn-group btn-group-justified">
                                                                             <button class="btn btn-pink btn-sm" onclick="showDesc('<%= contacto.descripcion %>')" title="INFORMACION"><i class="ti-info"></i></button>
+                                                                            <% if(user.tipo_usuario != 2){%>
                                                                             <a class="btn btn-primary btn-sm" href="/editarContacto?contacto=<%= contacto.folio  %>&cliente=<%= cliente[0].folio %>&flag=1"><i class="ti-pencil"></i></a>
                                                                             <button class="btn btn-danger btn-sm" onclick="confirmDeleteContact('<%= contacto.folio %>', '<%= cliente[0].folio %>')"><i class="ti-trash"></i></button>
+                                                                            <% } %> 
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -172,9 +178,11 @@
                                 <div class="tab-pane p-20" id="proyectos" role="tabpanel">
                                     <div class="col-lg-12">
                                         <div class="card">
+                                            <% if(user.tipo_usuario != 2){%>
                                             <div class="card-title">
                                                 <a href="/formcreateproyect?cliente=<%= cliente[0].folio %>&flag=1" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Crear Proyecto</a>   
                                             </div>
+                                            <% } %> 
                                             <div class="bootstrap-data-table-panel">
                                                 <div class="table-responsive">
                                                     <table id="row-select3" class="display table table-borderd table-hover">
@@ -197,11 +205,13 @@
                                                                 <td>
                                                                     <div class="button-list">
                                                                         <div class="btn-group btn-group-justified">
+                                                                            <% if(user.tipo_usuario != 2){%>
                                                                             <a class="btn btn-info btn-sm" href="/profileProyect?proyecto=<%= proyecto.folio %>&cliente=<%= cliente[0].folio %>&flag=1" title="CONFIGURACION DEL PROYECTO"><i class="ti-settings"></i></a>
                                                                             <a class="btn btn-success btn-sm" href="/proyectViaticos?proyecto=<%= proyecto.folio %>&cliente=<%= cliente[0].folio %>&flag=1" title="VIATICOS DEL PROYECTO"><i class="ti-money"></i></a>
+                                                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteProyecto('<%= proyecto.folio %>', '<%= cliente[0].folio %>')"><i class="ti-trash"></i></button>
+                                                                            <% } %> 
                                                                             <a class="btn btn-primary btn-sm" href="<%= proyecto.galeria %>" target="_blank" title="GALERIA DEL PROYECTO"><i class="ti-image"></i></a>
                                                                             <a class="btn btn-warning btn-sm" href="<%= proyecto.documentacion %>" target="_blank" title="DOCUMENTACION DEL PROYECTO"><i class="ti-files"></i></a>
-                                                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteProyecto('<%= proyecto.folio %>', '<%= cliente[0].folio %>')"><i class="ti-trash"></i></button>
                                                                         </div>
                                                                     </div>
                                                                 </td>   
@@ -226,9 +236,11 @@
                                 <div class="tab-pane p-20" id="cotizaciones" role="tabpanel">
                                     <div class="col-lg-12">
                                         <div class="card">
+                                            <% if(user.tipo_usuario != 2){%>
                                             <div class="card-title">
                                                 <a href="/formCreateCotClient?cliente=<%= cliente[0].folio %>" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Crear Cotizacion</a>     
                                             </div>
+                                            <% } %> 
                                             <div class="bootstrap-data-table-panel">
                                                 <div class="table-responsive">
                                                     <table id="row-select4" class="display table table-borderd table-hover">
@@ -260,7 +272,7 @@
                                                                     <div class="button-list">
                                                                         <div class="btn-group btn-group-justified">
                                                                             <a class="btn btn-info btn-sm" href="/cotizacionMain?cotizacion=<%= cotizacion.folio %>&cliente=<%= cliente[0].folio %>&flag=6" title="INFORMACION"><i class="ti-settings"></i></a>
-                                                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteCoti('<%= cotizacion.folio %>', '<%= cliente[0].folio %>')" title="ELIMINAR COTIZACION"><i class="ti-trash"></i></button>
+                                                                            <% if(user.tipo_usuario != 2){%><button class="btn btn-danger btn-sm" onclick="confirmDeleteCoti('<%= cotizacion.folio %>', '<%= cliente[0].folio %>')" title="ELIMINAR COTIZACION"><i class="ti-trash"></i></button><% } %> 
                                                                         </div>
                                                                     </div>
                                                                 </td>

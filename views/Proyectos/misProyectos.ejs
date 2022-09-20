@@ -50,8 +50,8 @@
                                                 <td><%= proyecto.folio %></td>
                                                 <td onclick="showInfo('<%= proyecto.descripcion %>')" style="cursor: pointer;"><%= proyecto.rol %></td>
                                                 <td><%= proyecto.proyecto %></td>
-                                                <td><%= proyecto.cliente %></td>
-                                                <td><%= proyecto.ubicacion %></td>
+                                                <td onclick="irCliente('<%= proyecto.folio_cliente %>')" style="cursor: pointer;"><%= proyecto.cliente %></td>
+                                                <td onclick="irUbicacion('<%= proyecto.folio_ubicacion %>')" style="cursor: pointer;"><%= proyecto.ubicacion %></td>
                                                 <td><%= proyecto.estatus %></td>
                                                 <td>
                                                     <div class="button-list">
@@ -88,43 +88,6 @@
 </div>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function crearCategoria(){
-        Swal.fire({
-            title: 'NUEVA CATEGORIA',
-            input: 'text',
-            icon: 'info',
-            inputLabel: 'Nombre de la nueva categoria',
-            showCancelButton: true,
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Tienes que escribir algo'
-                }else{
-                    const ruta = `/createCategoria/${value}`
-                    window.location = ruta
-                }
-            }
-        })
-    }
-    function editServicio(folio){
-        const ruta = `/editarservicio/${folio}`
-        window.location = ruta
-    }
-    function confirmDelete(folio){
-        Swal.fire({
-            title: '¿ESTAS SEGURO?',
-            text: `Se eliminará el servicio ${folio}`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Elimiar'
-            }).then((result) => {
-            if (result.isConfirmed) {
-                const ruta = `/deleteServicio/${folio}`
-                window.location = ruta
-            }
-        })
-    }
     function showInfo(descripcion){
         Swal.fire({
             icon: 'info',
@@ -132,7 +95,12 @@
             text: `${descripcion}`,
         })
     }
-    
+    function irCliente(cliente){
+        window.location = `/perfilCliente?cliente=${cliente}`
+    }
+    function irUbicacion(ubicacion){
+        window.location = `/perfilUbicacion?ubicacion=${ubicacion}&flag=0`
+    }
 </script>
 
 <%- include('../partials/scriptsNav.ejs') %> 
