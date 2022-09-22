@@ -3,13 +3,14 @@ const {promisify} = require('util')
 const { query } = require('../database/db')
 const { nextTick } = require('process')
 
-function calculateRutaProy(cliente, ubicacion, proyecto, flag){
+function calculateRutaProy(cliente, ubicacion, proyecto, flag, permisos){
     let ruta = '';
     switch(parseInt(flag)){
         case 0: ruta = `/proyectViaticos?proyecto=${proyecto}&flag=0`; break;
         case 1: ruta = `/proyectViaticos?proyecto=${proyecto}&cliente=${cliente}&flag=1`; break;
         case 2: ruta = `/proyectViaticos?proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}`; break;
         case 3: ruta = `/proyectViaticos?proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}`; break;
+        case 4: ruta = `/proyectViaticos?proyecto=${proyecto}&flag=4&permisos=${permisos}`; break;
     }
     return ruta;
 }
@@ -44,7 +45,7 @@ function showError(res, titulo, mensaje, ruta){
             let proyecto = req.query.proyecto
             let presupuesto = req.query.presupuesto
 
-            let ruta = calculateRutaProy(req.query.cliente, req.query.ubicacion, req.query.proyecto, req.query.flag)
+            let ruta = calculateRutaProy(req.query.cliente, req.query.ubicacion, req.query.proyecto, req.query.flag, req.query.permisos)
 
             conexion.query("UPDATE cat009_proyectos SET presupuesto = ? WHERE folio = ?", [presupuesto, proyecto], (error, fila)=>{
                 if(error){
@@ -61,7 +62,7 @@ function showError(res, titulo, mensaje, ruta){
     }
     exports.assignViaticosProyect = async(req, res, next)=>{
         try {
-            const ruta = calculateRutaProy(req.body.cliente, req.body.ubicacion, req.body.proyecto, req.body.flag)
+            const ruta = calculateRutaProy(req.body.cliente, req.body.ubicacion, req.body.proyecto, req.body.flag, req.body.permisos)
             const fecha = new Date()
             const fechaHoy = formatoFecha(fecha, 'yymmddhhnnss')
             let clave = {
@@ -130,7 +131,7 @@ function showError(res, titulo, mensaje, ruta){
             const deposito = req.query.deposito
             const beneficiario = req.query.bene
             const monto =  parseFloat(req.query.monto)
-            const ruta = calculateRutaProy(req.query.cliente, req.query.ubicacion, req.query.proyecto, req.query.flag)
+            const ruta = calculateRutaProy(req.query.cliente, req.query.ubicacion, req.query.proyecto, req.query.flag, req.query.permisos)
 
             //Validamos que no existan comprobaciones del deposito
             conexion.query("SELECT folio FROM viaticos_comprobaciones_view001 WHERE folio_clave = ?", [clave], (err, fila1)=>{
@@ -187,7 +188,7 @@ function showError(res, titulo, mensaje, ruta){
             const comprobante = req.query.comprobante
             const emisor = req.query.emisor
             const monto =  parseFloat(req.query.monto)
-            const ruta = calculateRutaProy(req.query.cliente, req.query.ubicacion, req.query.proyecto, req.query.flag)
+            const ruta = calculateRutaProy(req.query.cliente, req.query.ubicacion, req.query.proyecto, req.query.flag, req.query.permisos)
 
             conexion.query("DELETE FROM cat022_operaciones WHERE folio = ?", [comprobante], (error, fila)=>{
                 if(error){

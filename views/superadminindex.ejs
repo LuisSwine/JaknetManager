@@ -118,7 +118,7 @@
                                                             <% if(tarea.folio_tipo == 1){%>
                                                             <button class="btn btn-success btn-sm" onclick="subirReporte('<%= tarea.folio_tarea %>', '<%= userName.folio %>')" title="Subir reporte"><i class="ti-files"></i></button>
                                                             <%}else if(tarea.folio_tipo == 2){%>
-                                                            <a class="btn btn-success btn-sm" href="" title="Marcar como completada"><i class="ti-check"></i></a>
+                                                            <button class="btn btn-success btn-sm" onclick="marcarEntrega('<%= tarea.folio_tarea %>', '<%= userName.folio %>')" title="Marcar como completada"><i class="ti-check"></i></button>
                                                             <%}%>
                                                             <% if(tarea.folio_estatus == 2 && tarea.folio_tipo != 2){ %>
                                                             <button class="btn btn-primary btn-sm" onclick="verReporte('<%= tarea.folio_tarea %>', '<%= encodeURIComponent(JSON.stringify(reportes)) %>')" title="Ver reporte"><i class="ti-eye"></i></button>
@@ -207,6 +207,22 @@
                 }
             })
         }
+        function marcarEntrega(tarea, usuario){
+        Swal.fire({
+            title: '¿SEGURO?',
+            text: `Se marcará como completada la tarea`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Entregar'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                const ruta = `/entregarTarea?tarea=${tarea}&usuario=${usuario}&flag=0`
+                window.location = ruta
+            }
+        })
+    }
     </script>
 <%- include('partials/scriptsNav.ejs') %> 
 <%- include('partials/footer.ejs') %> 

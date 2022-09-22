@@ -26,12 +26,13 @@
                                 <%}else if(flag == 2 || flag == 3){%>
                                 <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%= tarea[0].folio_etapa %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>">Tareas</a></li>
                                 <%}else if(flag == 4){%>
-                                <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%= tarea[0].folio_etapa %>&ubicacion=<%= ubicacion %>&flag=4">Tareas</a></li>
-                                <%}else if(flag == 5){%>
-                                <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%= tarea[0].folio_etapa %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=5">Tareas</a></li>                                    
-                                <%}else if(flag == 6){%>
-                                <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%= tarea[0].folio_etapa %>&cliente=<%= cliente %>&flag=<%= flag %>">Tareas</a></li>
-                                <%} %>
+                                <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%= tarea[0].folio_etapa %>&proyecto=<%= proyecto %>&flag=<%= flag %>&permisos=<%= permisos %>">Tareas</a></li>
+                                <!-- <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%//= etapa[0].folio %>&ubicacion=<%//= ubicacion %>&flag=4">Tareas</a></li>
+                                <%//}else if(flag == 5){%>
+                                <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%//= etapa[0].folio %>&ubicacion=<%//= ubicacion %>&cliente=<%//= cliente %>&flag=5">Tareas</a></li>                                    
+                                <%//}else if(flag == 6){%>
+                                <li class="breadcrumb-item"><a href="/tareasetapa?etapa=<%//= etapa[0].folio %>&cliente=<%//= cliente %>&flag=<%//= flag %>">Tareas</a></li> -->
+                                <%} %> 
                                 <li class="breadcrumb-item active">Editar Tarea</li>
                             </ol>
                         </div>
@@ -80,6 +81,7 @@
                                                 <input type="number" class="form-control" value="<%= ubicacion %>" id="ubicacion" name="ubicacion" hidden>
                                                 <input type="number" class="form-control" value="<%= cliente %>" id="cliente" name="cliente" hidden>
                                                 <input type="number" class="form-control" value="<%= flag %>" id="flag" name="flag" hidden>
+                                                <input type="number" class="form-control" value="<%= permisos %>" name="permisos" id="permisos" hidden>
                                             </div>
                                         </div>
                                     </div>

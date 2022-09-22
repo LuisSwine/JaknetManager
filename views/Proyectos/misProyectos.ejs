@@ -56,7 +56,10 @@
                                                 <td>
                                                     <div class="button-list">
                                                         <div class="btn-group btn-group-justified">
-                                                            <a class="btn btn-info btn-sm" href="/profileProyect?proyecto=<%= proyecto.folio_proyecto %>&flag=0" title="CONFIGURACION DEL PROYECTO"><i class="ti-settings"></i></a>
+                                                            <a class="btn btn-info btn-sm" href="/profileProyect?proyecto=<%= proyecto.folio_proyecto %>&flag=4&permisos=<%= proyecto.folio_rol %> " title="CONFIGURACION DEL PROYECTO"><i class="ti-settings"></i></a>
+                                                            <% if(proyecto.folio_rol == 1){%> 
+                                                            <a class="btn btn-success btn-sm" href="/proyectViaticos?proyecto=<%= proyecto.folio_proyecto %>&flag=4&permisos=<%= proyecto.folio_rol %>" title="VIATICOS DEL PROYECTO"><i class="ti-money"></i></a>
+                                                            <% } %> 
                                                             <a class="btn btn-primary btn-sm" href="<%= proyecto.galeria %>" target="_blank" title="GALERIA DEL PROYECTO"><i class="ti-image"></i></a>
                                                             <a class="btn btn-warning btn-sm" href="<%= proyecto.documentacion %>" target="_blank" title="DOCUMENTACION DEL PROYECTO"><i class="ti-files"></i></a>
                                                         </div>

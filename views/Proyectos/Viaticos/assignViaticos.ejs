@@ -25,7 +25,9 @@
                                     <li class="breadcrumb-item"><a href="/proyectViaticos?proyecto=<%= proyecto %>&cliente=<%= cliente %>&flag=1">Proyecto</a></li>
                                 <%}else if(flag == 2 || flag == 3){%>
                                     <li class="breadcrumb-item"><a href="/proyectViaticos?proyecto=<%= proyecto %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=<%= flag %>">Proyecto</a></li>
-                                <%}%>
+                                <%}else if(flag == 4){%>
+                                    <li class="breadcrumb-item"><a href="/proyectViaticos?proyecto=<%= proyecto %>&flag=4&permisos=<%= permisos %>">Proyecto</a></li>
+                                <% } %> 
                                 <li class="breadcrumb-item active">Asignar Viaticos</li>
                             </ol>
                         </div>
@@ -74,6 +76,7 @@
                                                 <input type="number" value="<%= ubicacion %>" class="form-control" id="ubicacion" name="ubicacion" hidden>
                                                 <input type="number" value="<%= cliente %>" class="form-control" id="cliente" name="cliente" hidden>
                                                 <input type="number" value="<%= flag %>" class="form-control" id="flag" name="flag" hidden>
+                                                <input type="number" value="<%= permisos %>" class="form-control" name="permisos" id="permisos" hidden>
                                             </div>
                                             <button type="submit" class="btn btn-primary m-b-10">ASIGNAR SALDO</button>
                                         </div>

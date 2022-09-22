@@ -27,6 +27,8 @@
                                     <li class="breadcrumb-item"><a href="/perfilUbicacion?ubicacion=<%= ubicacion %>&flag=0">Ubicacion</a></li>
                                 <%}else if(flag == 0){%>
                                     <li class="breadcrumb-item"><a href="/adminproyectos">Proyectos</a></li>
+                                <%}else if(flag == 4){%>
+                                    <li class="breadcrumb-item"><a href="/misProyectos?folio=<%= user.folio %>">Proyectos</a></li>
                                 <%} %>
                                 <li class="breadcrumb-item active">Viaticos</li>
                             </ol>
@@ -38,7 +40,7 @@
             <section id="main-content">
                 <div class="row">
                     <div class="col-lg-3">
-                        <div class="card" onclick="definePresupuesto('<%= proyecto[0].folio %>', '<%= cliente %>', '<%= ubicacion %>', '<%= flag %>')">
+                        <div class="card" onclick="definePresupuesto('<%= proyecto[0].folio %>', '<%= cliente %>', '<%= ubicacion %>', '<%= flag %>','<%= permisos %>')">
                             <div class="stat-widget-one">
                                 <div class="stat-icon dib">
                                     <i class="ti-money color-primary border-primary"></i>
@@ -106,8 +108,8 @@
                                     <div class="col-lg-12">
                                         <div class="card">
                                             <div class="card-title">
-                                                <a href="/formassignViatics?proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Asignar Viaticos</a>
-                                                <a href="/exportDataProyecto?data=depositos&proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>" class="btn btn-success btn-flat btn-addon"><i class="ti-new-window"></i>Exportar Datos</a>      
+                                                <a href="/formassignViatics?proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>&permisos=<%= permisos %>" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Asignar Viaticos</a>
+                                                <a href="/exportDataProyecto?data=depositos&proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>&permisos=<%= permisos %>" class="btn btn-success btn-flat btn-addon"><i class="ti-new-window"></i>Exportar Datos</a>      
                                             </div>
                                             <div class="bootstrap-data-table-panel">
                                                 <div class="table-responsive">
@@ -141,7 +143,7 @@
                                                                         <div class="btn-group btn-group-justified">
                                                                             <a href="<%= deposito.enlace %>" class="btn btn-warning btn-sm" target="_blank"><i class="ti-link"></i></a>
                                                                             <% if(deposito.folio_emisor == user.folio){%> 
-                                                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteDeposito('<%= deposito.folio%>', '<%= deposito.folio_clave %>', '<%= deposito.id_bene %>', '<%= deposito.monto %>','<%= proyecto[0].folio %>', '<%= ubicacion %>','<%= cliente %>', '<%= flag %>')"><i class="ti-trash"></i></button>
+                                                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteDeposito('<%= deposito.folio%>', '<%= deposito.folio_clave %>', '<%= deposito.id_bene %>', '<%= deposito.monto %>','<%= proyecto[0].folio %>', '<%= ubicacion %>','<%= cliente %>', '<%= flag %>', '<%= permisos %>')"><i class="ti-trash"></i></button>
                                                                             <%}%> 
                                                                         </div>
                                                                     </div>
@@ -172,7 +174,7 @@
                                     <div class="col-lg-12">
                                         <div class="card">
                                             <div class="card-title">
-                                                <a href="/exportDataProyecto?data=comprobantes&proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>" class="btn btn-success btn-flat btn-addon"><i class="ti-new-window"></i>Exportar Datos</a>     
+                                                <a href="/exportDataProyecto?data=comprobantes&proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>&permisos=<%= permisos %>" class="btn btn-success btn-flat btn-addon"><i class="ti-new-window"></i>Exportar Datos</a>     
                                             </div>
                                             <div class="bootstrap-data-table-panel">
                                                 <div class="table-responsive">
@@ -205,7 +207,7 @@
                                                                         <div class="button-list">
                                                                             <div class="btn-group btn-group-justified">
                                                                                 <a href="<%= comprobacion.enlace %>" class="btn btn-warning btn-sm" target="_blank"><i class="ti-link"></i></a>
-                                                                                <button class="btn btn-danger btn-sm" onclick="confirmDeleteComprobacion('<%= comprobacion.folio%>', '<%= comprobacion.folio_emisor %>', '<%= comprobacion.monto %>', '<%= proyecto[0].folio %>', '<%= ubicacion %>','<%= cliente %>', '<%= flag %>')"><i class="ti-trash"></i></button>
+                                                                                <button class="btn btn-danger btn-sm" onclick="confirmDeleteComprobacion('<%= comprobacion.folio%>', '<%= comprobacion.folio_emisor %>', '<%= comprobacion.monto %>', '<%= proyecto[0].folio %>', '<%= ubicacion %>','<%= cliente %>', '<%= flag %>', '<%= permisos %>')"><i class="ti-trash"></i></button>
                                                                             </div>
                                                                         </div>
                                                                     </td>
@@ -249,7 +251,7 @@
             text: `${descripcion}`,
         })
     }
-    function confirmDeleteDeposito(deposito, clave, bene, monto, proyecto, ubicacion, cliente, flag){
+    function confirmDeleteDeposito(deposito, clave, bene, monto, proyecto, ubicacion, cliente, flag, permisos){
         Swal.fire({
             title: '¿ESTAS SEGURO?',
             text: `Se eliminará el deposito ${deposito} (si el deposito ya esta comprobado no se podrá eliminar)`,
@@ -260,12 +262,12 @@
             confirmButtonText: 'Elimiar'
             }).then((result) => {
             if (result.isConfirmed) {
-                const ruta = `/deleteDepositoViaticosProyecto?deposito=${deposito}&clave=${clave}&bene=${bene}&monto=${monto}&proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}`
+                const ruta = `/deleteDepositoViaticosProyecto?deposito=${deposito}&clave=${clave}&bene=${bene}&monto=${monto}&proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}&permisos=${permisos}`
                 window.location = ruta
             }
         })
     }
-    function confirmDeleteComprobacion(comprobante, emisor, monto, proyecto, ubicacion, cliente, flag){
+    function confirmDeleteComprobacion(comprobante, emisor, monto, proyecto, ubicacion, cliente, flag, permisos){
         Swal.fire({
             title: '¿ESTAS SEGURO?',
             text: `Se eliminará el comprobante ${comprobante} (El dinero de la comprobacion se le reembolsará al emisor)`,
@@ -276,12 +278,12 @@
             confirmButtonText: 'Elimiar'
             }).then((result) => {
             if (result.isConfirmed) {
-                const ruta = `/deleteComprobanteProyecto?comprobante=${comprobante}&emisor=${emisor}&monto=${monto}&proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}`
+                const ruta = `/deleteComprobanteProyecto?comprobante=${comprobante}&emisor=${emisor}&monto=${monto}&proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}&permisos=${permisos}`
                 window.location = ruta
             }
         })
     }
-    function definePresupuesto(proyecto, cliente, ubicacion, flag){
+    function definePresupuesto(proyecto, cliente, ubicacion, flag, permisos){
         Swal.fire({
             title: 'DEFINIR O REDEFINIR PRESUPUESTO DEL PROYECTO',
             input: 'text',
@@ -292,7 +294,7 @@
                 if (!value) {
                     return 'Tienes que escribir algo'
                 }else{
-                    const ruta = `/definirPresupuesto?proyecto=${proyecto}&presupuesto=${value}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}`;
+                    const ruta = `/definirPresupuesto?proyecto=${proyecto}&presupuesto=${value}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}&permisos=${permisos}`;
                     window.location = ruta
                 }
             }

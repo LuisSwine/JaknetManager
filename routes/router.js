@@ -219,7 +219,7 @@ router.post('/login', authController.login)
         //*- FUNCION #3.4.3. PERFIL DE PROYECTO
             //#3.4.3.1. PAGINA DE PERFIL
             router.get('/profileProyect', authController.isAuthenticated, authController.selectProyect, authController.selectEtapasProyecto, authController.selectRolesProyecto, authController.selectContactsProyect, cotizacionesController.selectCotizaciones, (req, res) =>{
-                res.render('Proyectos/profileProyect', {user: req.user, proyecto: req.proyecto, etapas: req.etapas, roles: req.roles, contactos: req.contactos, cotizaciones: req.cotizaciones, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                res.render('Proyectos/profileProyect', {user: req.user, proyecto: req.proyecto, etapas: req.etapas, roles: req.roles, contactos: req.contactos, cotizaciones: req.cotizaciones, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
             })
             //#3.4.3.2. FUNCION EDITAR NOMBRE
             router.get('/cambiarNombreProyecto', proyectosController.cambiarNombreProyecto)
@@ -227,14 +227,14 @@ router.post('/login', authController.login)
                 //#3.4.3.3.1. CREAR O REGISTRAR ETAPA
                     //#3.4.3.3.1.1. FORMULARIO
                     router.get('/formaddetapa', authController.isAuthenticated, authController.selectProyect, authController.selectAreasProyect, (req, res)=>{
-                        res.render('Proyectos/formAddEtapa', {user: req.user, proyecto: req.proyecto, areas: req.areas, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                        res.render('Proyectos/formAddEtapa', {user: req.user, proyecto: req.proyecto, areas: req.areas, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                     })
                     //#3.4.3.3.1.2. FUNCION
                     router.post('/addEtapa', proyectosController.addEtapa)
                 //#3.4.3.3.2. EDITAR ETAPA
                     //#3.4.3.3.2.1. FORMULARIO
                     router.get('/editarEtapa', authController.isAuthenticated, proyectosController.selectEtapa, authController.selectAreasProyect, (req, res)=>{
-                        res.render('Proyectos/editarEtapa', {user: req.user, etapa: req.etapa, areas: req.areas, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                        res.render('Proyectos/editarEtapa', {user: req.user, etapa: req.etapa, areas: req.areas, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                     })
                     //#3.4.3.3.2.2. FUNCION
                     router.post('/editEtapa', proyectosController.editarEtapa)
@@ -243,43 +243,45 @@ router.post('/login', authController.login)
                 //#3.4.3.3.4. GESTIONAR TAREAS - ETAPA
                     //#3.4.3.3.4.1. PAGINA PRINCIPAL
                     router.get('/tareasetapa', authController.isAuthenticated, proyectosController.selectEtapa, tareasController.selectTareasEtapa, (req, res)=>{
-                        res.render('Proyectos/Tareas/tareasAdmin', {user: req.user, etapa: req.etapa, tareas: req.tareas, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                        res.render('Proyectos/Tareas/tareasAdmin', {user: req.user, etapa: req.etapa, tareas: req.tareas, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                     })
                     //#3.4.3.3.4.2. CREAR O REGISTRAR TAREA
                         //#3.4.3.3.4.2.1. FORMULARIO
                         router.get('/formaddtask', authController.isAuthenticated, proyectosController.selectEtapa, tareasController.selectTiposTarea, (req, res)=>{
-                            res.render('Proyectos/Tareas/formAddTask', {user: req.user, etapa: req.etapa, tipos: req.tipos, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                            res.render('Proyectos/Tareas/formAddTask', {user: req.user, etapa: req.etapa, tipos: req.tipos, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                         })
                         //#3.4.3.3.4.2.2. FUNCION
                         router.post('/createTarea', tareasController.createTarea)
                     //#3.4.3.3.4.3. EDITAR TAREA
                         //#3.4.3.3.4.3.1. FORMULARIO
                         router.get('/editarTarea', authController.isAuthenticated, tareasController.selectTarea, tareasController.selectTiposTarea, (req, res)=>{
-                            res.render('Proyectos/Tareas/editarTarea', {user: req.user, tarea: req.tarea, tipos: req.tipos, etapa: req.query.etapa, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                            res.render('Proyectos/Tareas/editarTarea', {user: req.user, tarea: req.tarea, tipos: req.tipos, etapa: req.query.etapa, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                         })
                         //#3.4.3.3.4.3.2. FUNCION
                         router.post('/editTarea', tareasController.editarTarea)
                     //#3.4.3.3.4.4. ASIGNAR TAREA
                         //#3.4.3.3.4.4.1. FORMULARIO
                         router.get('/asignarTarea', authController.isAuthenticated, tareasController.validateTarea, tareasController.usuariosAsignados, (req, res)=>{
-                            res.render('Proyectos/Tareas/asignTask', {user: req.user, tarea: req.tarea, usuarios: req.usuarios, etapa: req.query.etapa, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                            res.render('Proyectos/Tareas/asignTask', {user: req.user, tarea: req.tarea, usuarios: req.usuarios, etapa: req.query.etapa, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                         })
                         //#3.4.3.3.4.4.2. FUNCION
                         router.post('/asignTask', tareasController.asignarTarea)
                     //#3.4.3.3.4.5. REASIGNAR TAREA
                         //#3.4.3.3.4.5.1. FORMULARIO
                         router.get('/editarAsignacionTarea', authController.isAuthenticated, tareasController.selectAsignTask, tareasController.usuariosAsignados, (req, res)=>{
-                            res.render('Proyectos/Tareas/editarAsign', {user: req.user, asignacion: req.asignacion, usuarios: req.usuarios, etapa: req.query.etapa, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag})
+                            res.render('Proyectos/Tareas/editarAsign', {user: req.user, asignacion: req.asignacion, usuarios: req.usuarios, etapa: req.query.etapa, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                         })
                         //#3.4.3.3.4.5.2. FUNCION
                         router.post('/reasignTask', tareasController.editarAsignacion)
                     //#3.4.3.3.4.6. ELIMINAR TAREA - FUNCION
                     router.get('/deleteTask', tareasController.deleteTarea)
+                    //#3.4.3.3.4.7. Mostrar Asignacion de tarea
+                    router.get('/showInfoTarea', tareasController.showAsignTarea)
             //#3.4.3.4. GESTION DE ROLES
                 //#3.4.3.4.1. ASIGNAR ROLES
                     //#3.4.3.4.1.1. FORMULARIO
                     router.get('/formasignroles', authController.isAuthenticated, authController.selectProyect, authController.selectUsers, authController.selectRoles, (req, res)=>{
-                        res.render('Proyectos/formAsignRol', {user: req.user, proyecto: req.proyecto , usuarios: req.usuarios, roles: req.roles, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag})
+                        res.render('Proyectos/formAsignRol', {user: req.user, proyecto: req.proyecto , usuarios: req.usuarios, roles: req.roles, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag, permisos: req.query.permisos})
                     })
                     //#3.4.3.4.1.2. FUNCION
                     router.post('/asignRol', proyectosController.asignRolProyect)
@@ -293,18 +295,18 @@ router.post('/login', authController.login)
         //*- FUNCION #3.4.4. VIATICOS DE PROYECTO
             //#3.4.4.1. PAGINA PRINCIPAL
             router.get('/proyectViaticos', authController.isAuthenticated, authController.selectProyect, authController.datosViaticosProyectos, authController.selectDepositosProyecto, authController.selectComprobacionesProyecto, (req, res)=>{
-                res.render('Proyectos/Viaticos/viaticosAdmin', {user: req.user, proyecto: req.proyecto, datos: req.datos, depositos: req.depositos, comprobaciones: req.comprobaciones, flag: req.query.flag, ubicacion: req.query.ubicacion, cliente: req.query.cliente})
+                res.render('Proyectos/Viaticos/viaticosAdmin', {user: req.user, proyecto: req.proyecto, datos: req.datos, depositos: req.depositos, comprobaciones: req.comprobaciones, flag: req.query.flag, ubicacion: req.query.ubicacion, cliente: req.query.cliente, permisos: req.query.permisos})
             })
             //#3.4.4.2. ASIGNAR VIATICOS
                 //#3.4.4.2.1. FORMULARIO
                 router.get('/formassignViatics', authController.isAuthenticated, authController.selectRolesProyecto, (req, res)=>{
-                    res.render('Proyectos/Viaticos/assignViaticos', {user: req.user, roles: req.roles, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag })
+                    res.render('Proyectos/Viaticos/assignViaticos', {user: req.user, roles: req.roles, proyecto: req.query.proyecto, cliente: req.query.cliente, ubicacion: req.query.ubicacion, flag: req.query.flag, permisos: req.query.permisos})
                 })
                 //#3.4.4.2.2. FUNCION
                 router.post('/assignViaticsProy', viaticosController.assignViaticosProyect)
             //#3.4.4.3. EXPORTAR INFORMACIÓN DE PROYECTO
             router.get('/exportDataProyecto', authController.isAuthenticated, authController.selectDepositosProyecto, authController.selectComprobacionesProyecto, (req, res)=>{
-                res.render('Proyectos/Viaticos/exportData', {user: req.user, proyecto: req.query.proyecto, data: req.query.data, depositos: req.depositos, comprobaciones: req.comprobaciones, flag: req.query.flag, ubicacion: req.query.ubicacion, cliente: req.query.cliente})
+                res.render('Proyectos/Viaticos/exportData', {user: req.user, proyecto: req.query.proyecto, data: req.query.data, depositos: req.depositos, comprobaciones: req.comprobaciones, flag: req.query.flag, ubicacion: req.query.ubicacion, cliente: req.query.cliente, permisos: req.query.permisos})
             })
             //#3.4.4.4. DEFINIR PRESUPUESTO
             router.get('/definirPresupuesto', viaticosController.definirPresupuesto)
@@ -703,7 +705,6 @@ router.get('/adminviaticos', authController.isAuthenticated, authController.sele
 router.get('/adminProject/:folio', authController.isAuthenticated, authController.selectProyectos, clientController.selectClient, (req, res) =>{
     res.render('Proyectos/proyectosAdmin', {user: req.user, proyectos: req.proyectos, flag: req.flag, cliente: req.cliente})
 })
-router.get('/showInfoTarea', tareasController.showAsignTarea)
 router.get('/selectUsers', authController.selectUsers)
 router.get('/selectUser/:folio', authController.selectUser)
 router.get('/deleteUser/:folio', authController.deleteUser)

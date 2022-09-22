@@ -3,7 +3,7 @@ const {promisify} = require('util')
 const { query } = require('../database/db')
 const { nextTick } = require('process')
 
-function calculateRuta(flag, ubicacion, cliente, proyecto){
+function calculateRuta(flag, ubicacion, cliente, proyecto, permisos){
     let ruta = '';
     switch(parseInt(flag)){
         case 0:
@@ -17,6 +17,9 @@ function calculateRuta(flag, ubicacion, cliente, proyecto){
             break;
         case 3:
             ruta = `/profileProyect?proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=3`;
+            break;
+        case 4:
+            ruta = `/profileProyect?proyecto=${proyecto}&flag=4&permisos=${permisos}`;
             break;
     }
     return ruta
@@ -268,7 +271,7 @@ exports.addEtapa = async(req, res, next)=>{
             proyecto: req.body.proyecto
         }
 
-        let ruta =  calculateRuta(req.body.flag, req.body.ubicacion, req.body.cliente, data.proyecto)
+        let ruta =  calculateRuta(req.body.flag, req.body.ubicacion, req.body.cliente, data.proyecto, req.body.permisos)
 
         let insert = "INSERT INTO op002_etapas SET ?"
         conexion.query(insert, data, function(error, results){
@@ -306,7 +309,7 @@ exports.editarEtapa = async(req, res, next)=>{
         let area = req.body.area
         let proyecto = req.body.proyecto
 
-        let ruta =  calculateRuta(req.body.flag, req.body.ubicacion, req.body.cliente, proyecto)
+        let ruta =  calculateRuta(req.body.flag, req.body.ubicacion, req.body.cliente, proyecto, req.body.permisos)
 
         conexion.query("UPDATE op002_etapas SET nombre = ?, area = ? WHERE folio = ?", [nombre, area, etapa], (error, fila)=>{
             if(error){
@@ -324,7 +327,7 @@ exports.editarEtapa = async(req, res, next)=>{
 exports.deleteEtapa = async(req, res, next)=>{
     try {
         let etapa = req.query.etapa
-        let ruta = calculateRuta(req.query.flag, req.query.ubicacion, req.query.cliente, req.query.proyecto)
+        let ruta = calculateRuta(req.query.flag, req.query.ubicacion, req.query.cliente, req.query.proyecto, req.query.permisos)
         conexion.query("SELECT * FROM op003_tareas WHERE etapa = ?", [etapa], (err, fila)=>{
             if(err){
                 throw err
@@ -368,7 +371,7 @@ exports.asignRolProyect = async(req, res, next) =>{
             usuario: req.body.usuario,
             rol: req.body.rol
         }
-        let ruta = calculateRuta(req.body.flag, req.body.ubicacion, req.body.cliente, req.body.proyecto)
+        let ruta = calculateRuta(req.body.flag, req.body.ubicacion, req.body.cliente, req.body.proyecto, req.body.permisos)
         
         //Primero validamos si el usuario no tiene ya un rol asignado en el proyecto
         conexion.query("SELECT folio FROM op005_roles WHERE proyecto = ? AND usuario = ?", [data.proyecto, data.usuario], (error, fila)=>{
@@ -406,7 +409,7 @@ exports.asignRolProyect = async(req, res, next) =>{
 }
 exports.deleteRol = async(req, res, next)=>{
     try {
-        let ruta = calculateRuta(req.query.flag, req.query.ubicacion, req.query.cliente, req.query.proyecto)
+        let ruta = calculateRuta(req.query.flag, req.query.ubicacion, req.query.cliente, req.query.proyecto, req.query.permisos)
         
         //Validamos que el usuario no tenga una tarea asignada
         conexion.query("SELECT folio FROM validar_tarea_view001 WHERE usuario = ? AND proyecto = ?", [req.query.usuario, req.query.proyecto], (error, fila)=>{

@@ -3,16 +3,16 @@ const {promisify} = require('util')
 const { query } = require('../database/db')
 const { nextTick } = require('process')
 
-function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
+function calculateRuta(flag, etapa, proyecto, ubicacion, cliente, permisos){
     let ruta = '';
     switch(parseInt(flag)){
         case 0: ruta = `tareasetapa?etapa=${etapa}&proyecto=${proyecto}&flag=0`; break;
         case 1: ruta = `tareasetapa?etapa=${etapa}&proyecto=${proyecto}&cliente=${cliente}&flag=1`; break;
         case 2: ruta = `tareasetapa?etapa=${etapa}&proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}`;break;
         case 3: ruta = `tareasetapa?etapa=${etapa}&proyecto=${proyecto}&ubicacion=${ubicacion}&cliente=${cliente}&flag=${flag}`;break;
-        case 4: ruta = `tareasetapa?etapa=${etapa}&ubicacion=${ubicacion}&flag=4`; break;
-        case 5: ruta = `tareasetapa?etapa=${etapa}&ubicacion=${ubicacion}&cliente=${cliente}&flag=5`; break;
-        case 6: ruta = `tareasetapa?etapa=${etapa}&cliente=${cliente}&flag=6`;break;
+        case 4: ruta = `tareasetapa?etapa=${etapa}&proyecto=${proyecto}&flag=${flag}&permisos=${permisos}`; break;
+        //case 5: ruta = `tareasetapa?etapa=${etapa}&ubicacion=${ubicacion}&cliente=${cliente}&flag=5`; break;
+        //case 6: ruta = `tareasetapa?etapa=${etapa}&cliente=${cliente}&flag=6`;break;
         default: ruta = 'adminubicaciones'; break;
     }
     return ruta;
@@ -58,7 +58,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
                 estatus: req.body.estatus,
                 tipo: req.body.tipo
             }
-            let ruta = calculateRuta(req.body.flag, data.etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente)
+            let ruta = calculateRuta(req.body.flag, data.etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente, req.body.permisos)
 
             conexion.query("INSERT INTO op003_tareas SET ?", data, (error, results)=>{
                 if(error){
@@ -153,7 +153,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
                 usuario: req.body.usuario,
                 tarea: req.body.tarea
             }
-            let ruta = calculateRuta(req.body.flag, req.body.etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente)
+            let ruta = calculateRuta(req.body.flag, req.body.etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente, req.body.permisos)
             conexion.query("INSERT INTO op014_tarea_usuario SET ?", data, function(error, results){
                 if(error){
                     throw error
@@ -218,7 +218,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
             let tipo          = req.body.tipo
 
             let sql = "UPDATE op003_tareas SET descripcion = ?, fecha_entrega = ?, tipo = ? WHERE folio = ?"
-            const ruta = calculateRuta(req.body.flag, etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente)
+            const ruta = calculateRuta(req.body.flag, etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente, req.body.permisos)
 
             conexion.query(sql, [descripcion, fecha_entrega, tipo, folio], (error, results)=>{
                 if(error){
@@ -235,7 +235,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
     }
     exports.showAsignTarea = async(req, res, next)=>{
         try {
-            const ruta = calculateRuta(req.query.flag, req.query.etapa, req.query.proyecto, req.query.ubicacion, req.query.cliente)
+            const ruta = calculateRuta(req.query.flag, req.query.etapa, req.query.proyecto, req.query.ubicacion, req.query.cliente, req.query.permisos)
             conexion.query("SELECT * FROM tarea_asignada_view001 WHERE folio_tarea = ?", [req.query.tarea], (error, fila)=>{
                 if(error){
                     throw error
@@ -280,7 +280,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
             let asignacion = req.body.asignacion
             let etapa = req.body.etapa
 
-            const ruta = calculateRuta(req.body.flag, etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente)
+            const ruta = calculateRuta(req.body.flag, etapa, req.body.proyecto, req.body.ubicacion, req.body.cliente, req.body.permisos)
 
             if(usuario == 0){
                 conexion.query("DELETE FROM op014_tarea_usuario WHERE folio = ?", [asignacion], (err, fila)=>{
@@ -324,7 +324,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
     exports.deleteTarea = async(req, res, next)=>{
         try {
             let tarea = req.query.tarea
-            const ruta = calculateRuta(req.query.flag, req.query.etapa, req.query.proyecto, req.query.ubicacion, req.query.cliente)
+            const ruta = calculateRuta(req.query.flag, req.query.etapa, req.query.proyecto, req.query.ubicacion, req.query.cliente, req.query.permisos)
             conexion.query("SELECT * FROM op014_tarea_usuario WHERE tarea = ?", [tarea], (err, fila)=>{
                 if(err){
                     throw err
@@ -366,7 +366,79 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
     }
     //FIN DE TAREAS
 
-//DASHBOARD
+//DASHBOARD DE PERFIL
+    exports.selectInfoTareasUserDashboard = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM asignacion_usuario_view001 WHERE folio_usuario = ? ORDER BY folio_asignacion DESC LIMIT 10", [req.query.folio], (error, fila)=>{
+                if(error){
+                    throw error
+                }else{
+                    req.tareas = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.obtenerReportes = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM op004_reporte WHERE usuario = ?", [req.query.folio], (error,fila)=>{
+                if(error){
+                    throw error
+                }else{
+                    req.reportes = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.obtenerReportesAdmin = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM op004_reporte", (error,fila)=>{
+                if(error){
+                    throw error
+                }else{
+                    req.reportes = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+    exports.asignarTareaAdmin = async(req, res, next)=>{
+        try {
+            let data ={
+                usuario: req.body.usuario,
+                tarea: req.body.tarea
+            }
+            conexion.query("INSERT INTO op014_tarea_usuario SET ?", data, function(error, results){
+                if(error){
+                    throw error
+                }else{
+                    conexion.query("UPDATE op003_tareas SET estatus = 1 WHERE folio = ?", [data.tarea], (miss, good)=>{
+                        if(miss){
+                            throw miss
+                        }else{
+                            res.redirect('/admintareas')
+                            return next()
+                        }
+                    })  
+                }
+            }) 
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }
+
+//SECCION DE "MIS TAREAS"
     exports.selectInfoTareasUser = async(req, res, next)=>{
         try {
             conexion.query("SELECT * FROM asignacion_usuario_view001 WHERE folio_usuario = ? ORDER BY folio_asignacion DESC", [req.query.folio], (error, fila)=>{
@@ -382,13 +454,21 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
             return next()
         }
     }
-    exports.selectInfoTareasUserDashboard = async(req, res, next)=>{
+
+//FUNCIONES GENERALES "MIS TAREAS" & DASHBOARD DE PERFIL
+    exports.entregarTarea = async(req, res, next)=>{
         try {
-            conexion.query("SELECT * FROM asignacion_usuario_view001 WHERE folio_usuario = ? ORDER BY folio_asignacion DESC LIMIT 5", [req.query.folio], (error, fila)=>{
-                if(error){
-                    throw error
+            let ruta = ''
+            if(req.query.flag == 1){
+                ruta = `/misTareas?folio=${req.query.usuario}`
+            }else if(req.query.flag == 0){
+                ruta = `/?folio=${req.query.usuario}`
+            }
+            conexion.query('UPDATE op003_tareas SET estatus = 2 WHERE folio = ?', [req.query.tarea], (error2, fila2)=>{
+                if(error2){
+                    throw error2
                 }else{
-                    req.tareas = fila
+                    res.redirect(ruta)
                     return next()
                 }
             })
@@ -461,82 +541,7 @@ function calculateRuta(flag, etapa, proyecto, ubicacion, cliente){
             return next()
         }
     }
-    exports.entregarTarea = async(req, res, next)=>{
-        try {
-            let ruta = ''
-            if(req.query.flag == 1){
-                ruta = `/misTareas?folio=${req.query.usuario}`
-            }else if(req.query.flag == 0){
-                ruta = `/?folio=${req.query.usuario}`
-            }
-            conexion.query('UPDATE op003_tareas SET estatus = 2 WHERE folio = ?', [req.query.tarea], (error2, fila2)=>{
-                if(error2){
-                    throw error2
-                }else{
-                    res.redirect(ruta)
-                    return next()
-                }
-            })
-        } catch (error) {
-            console.log(error)
-            return next()
-        }
-    }
-    exports.obtenerReportes = async(req, res, next)=>{
-        try {
-            conexion.query("SELECT * FROM op004_reporte WHERE usuario = ?", [req.query.folio], (error,fila)=>{
-                if(error){
-                    throw error
-                }else{
-                    req.reportes = fila
-                    return next()
-                }
-            })
-        } catch (error) {
-            console.log(error)
-            return next()
-        }
-    }
-    exports.obtenerReportesAdmin = async(req, res, next)=>{
-        try {
-            conexion.query("SELECT * FROM op004_reporte", (error,fila)=>{
-                if(error){
-                    throw error
-                }else{
-                    req.reportes = fila
-                    return next()
-                }
-            })
-        } catch (error) {
-            console.log(error)
-            return next()
-        }
-    }
-    exports.asignarTareaAdmin = async(req, res, next)=>{
-        try {
-            let data ={
-                usuario: req.body.usuario,
-                tarea: req.body.tarea
-            }
-            conexion.query("INSERT INTO op014_tarea_usuario SET ?", data, function(error, results){
-                if(error){
-                    throw error
-                }else{
-                    conexion.query("UPDATE op003_tareas SET estatus = 1 WHERE folio = ?", [data.tarea], (miss, good)=>{
-                        if(miss){
-                            throw miss
-                        }else{
-                            res.redirect('/admintareas')
-                            return next()
-                        }
-                    })  
-                }
-            }) 
-        } catch (error) {
-            console.log(error)
-            return next()
-        }
-    }
+
 
 //ADMINISTRADOR
     exports.declineReportAdmin = async(req, res, next)=>{

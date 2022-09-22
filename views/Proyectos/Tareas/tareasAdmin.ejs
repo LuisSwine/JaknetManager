@@ -26,11 +26,10 @@
                                     <%}else if(flag == 2 || flag == 3){%>
                                     <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>">Proyecto</a></li>
                                     <%}else if(flag == 4){%>
-                                    <li class="breadcrumb-item"><a href="/perfilUbicacion?ubicacion=<%= ubicacion %>&flag=0">Ubicacion</a></li>
-                                    <%}else if(flag == 5){%>
-                                    <li class="breadcrumb-item"><a href="/perfilUbicacion?ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=1">Ubicacion</a></li>
-                                    <%}else if(flag == 6){%>
-                                    <li class="breadcrumb-item"><a href="/perfilCliente?cliente=<%= cliente %>">Cliente</a></li>
+                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto %>&flag=<%= flag %>&permisos=<%= permisos %>">Proyecto</a></li>
+                                    <!-- <li class="breadcrumb-item"><a href="/perfilUbicacion?ubicacion=<%// ubicacion %>&flag=0">Ubicacion</a></li>
+                                    <li class="breadcrumb-item"><a href="/perfilUbicacion?ubicacion=<%// ubicacion %>&cliente=<%// cliente %>&flag=1">Ubicacion</a></li>
+                                    <li class="breadcrumb-item"><a href="/perfilCliente?cliente=<%// cliente %>">Cliente</a></li> -->
                                     <%} %>
                                 <li class="breadcrumb-item active">Tareas</li>
                             </ol>
@@ -44,7 +43,7 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-title">
-                                <a href="/formaddtask?etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Añadir Tarea</a>
+                                <a href="/formaddtask?etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>&permisos=<%= permisos %>" class="btn btn-primary btn-flat btn-addon"><i class="ti-plus"></i>Añadir Tarea</a>
                             </div>
                             <div class="bootstrap-data-table-panel">
                                 <div class="table-responsive">
@@ -65,7 +64,7 @@
                                                 <td><%= tarea.folio %></td>
                                                 <td><%= tarea.descripcion %></td>
                                                 <td><%= tarea.fecha.toLocaleDateString('en-GB') %></td>
-                                                <td><%= tarea.estatus %>  <% if(tarea.folio_estatus != 7){%><a class="btn btn-info btn-sm" href="/showInfoTarea?tarea=<%= tarea.folio %>&etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>" title="Usuario Asignado"><i class="ti-info"></i></a><%}%></td>
+                                                <td><%= tarea.estatus %>  <% if(tarea.folio_estatus != 7){%><a class="btn btn-info btn-sm" href="/showInfoTarea?tarea=<%= tarea.folio %>&etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>&permisos=<%= permisos %>" title="Usuario Asignado"><i class="ti-info"></i></a><%}%></td>
                                                 <td><%= tarea.tipo %></td>
                                                 <td>
                                                     <div class="button-list">
@@ -73,14 +72,14 @@
                                                             <% 
                                                             let ruta = ''
                                                             if(tarea.folio_estatus == 7){
-                                                                ruta = `/asignarTarea?tarea=${tarea.folio}&etapa=${etapa[0].folio}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}`
+                                                                ruta = `/asignarTarea?tarea=${tarea.folio}&etapa=${etapa[0].folio}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}&permisos=${permisos}`
                                                             }else{
-                                                                ruta = `/editarAsignacionTarea?tarea=${tarea.folio}&etapa=${etapa[0].folip}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}`
+                                                                ruta = `/editarAsignacionTarea?tarea=${tarea.folio}&etapa=${etapa[0].folip}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}&permisos=${permisos}`
                                                             }
                                                             %>
                                                             <a class="btn btn-warning btn-sm" href="<%= ruta %>" title="ASIGNAR TAREA"><i class="ti-write"></i></a>
-                                                            <a class="btn btn-success btn-sm" href="/editarTarea?tarea=<%= tarea.folio %>&etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>"><i class="ti-pencil-alt"></i></a>
-                                                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= tarea.folio %>', '<%= etapa[0].folio %>', '<%= proyecto %>', '<%= cliente %>', '<%= ubicacion %>', '<%= flag %>')"><i class="ti-trash"></i></button>
+                                                            <a class="btn btn-success btn-sm" href="/editarTarea?tarea=<%= tarea.folio %>&etapa=<%= etapa[0].folio %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&ubicacion=<%= ubicacion %>&flag=<%= flag %>&permisos=<%= permisos %>"><i class="ti-pencil-alt"></i></a>
+                                                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= tarea.folio %>', '<%= etapa[0].folio %>', '<%= proyecto %>', '<%= cliente %>', '<%= ubicacion %>', '<%= flag %>', '<%= permisos %>')"><i class="ti-trash"></i></button>
                                                         </div>
                                                     </div>
                                                 </td>   
@@ -109,7 +108,7 @@
 </div>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmDelete(folio, etapa, proyecto, cliente, ubicacion, flag){
+    function confirmDelete(folio, etapa, proyecto, cliente, ubicacion, flag, permisos){
         Swal.fire({
             title: '¿ESTAS SEGURO?',
             text: `Se eliminará la tarea ${folio} (si la tarea esta asignada no se podrá eliminar, primero elimine la asignacion)`,
@@ -120,7 +119,7 @@
             confirmButtonText: 'Elimiar'
             }).then((result) => {
             if (result.isConfirmed) {
-                const ruta = `/deleteTask?tarea=${folio}&etapa=${etapa}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}`
+                const ruta = `/deleteTask?tarea=${folio}&etapa=${etapa}&proyecto=${proyecto}&cliente=${cliente}&ubicacion=${ubicacion}&flag=${flag}&permisos=${permisos}`
                 window.location = ruta
             }
         })

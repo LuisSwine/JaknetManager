@@ -25,6 +25,8 @@
                                     <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto[0].folio %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=<%= flag %>"><%= proyecto[0].nombre %></a></li>
                                 <%}else if(flag == 0){%>
                                     <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto[0].folio %>&flag=<%= flag %>"><%= proyecto[0].nombre %></a></li>
+                                <%}else if(flag == 4){%>
+                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto[0].folio %>&flag=<%= flag %>&permisos=<%= permisos %>"><%= proyecto[0].nombre %></a></li>
                                 <%} %>
                                 <li class="breadcrumb-item active">Asignar Roles</li>
                             </ol>
@@ -58,6 +60,7 @@
                                                 <input type="number" class="form-control" value="<%= ubicacion %>" id="ubicacion" name="ubicacion" hidden>
                                                 <input type="number" class="form-control" value="<%= cliente %>" id="cliente" name="cliente" hidden>
                                                 <input type="number" class="form-control" value="<%= flag %>" id="flag" name="flag" hidden>
+                                                <input type="number" class="form-control" value="<%= permisos %>" id="permisos" name="permisos" hidden>
                                             </div>
                                             <button type="submit" class="btn btn-primary m-b-10">ASIGNAR ROL</button>
                                         </div>

@@ -20,11 +20,13 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
                                 <% if(flag == 1){%>
-                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto[0].folio %>&cliente=<%= cliente %>&flag=<%= flag %>"><%= proyecto[0].nombre %></a></li>
+                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto %>&cliente=<%= cliente %>&flag=<%= flag %>">Proyecto</a></li>
                                 <%}else if(flag == 3 || flag == 2){%>
-                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto[0].folio %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=<%= flag %>"><%= proyecto[0].nombre %></a></li>
+                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=<%= flag %>">Proyecto</a></li>
                                 <%}else if(flag == 0){%>
-                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto[0].folio %>&flag=<%= flag %>"><%= proyecto[0].nombre %></a></li>
+                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto %>&flag=<%= flag %>">Proyecto</a></li>
+                                <%}else if(flag == 4){%>
+                                    <li class="breadcrumb-item"><a href="/profileProyect?proyecto=<%= proyecto %>&flag=<%= flag %>&permisos=<%= permisos %>">Proyecto</a></li> 
                                 <%} %>
                                 <li class="breadcrumb-item active">Editar Etapa</li>
                             </ol>
@@ -54,6 +56,7 @@
                                                 <input type="number" class="form-control" value="<%= cliente %>" id="cliente" name="cliente" hidden>
                                                 <input type="number" class="form-control" value="<%= ubicacion %>" id="ubicacion" name="ubicacion" hidden>
                                                 <input type="number" class="form-control" value="<%= flag %>" id="flag" name="flag" hidden>
+                                                <input type="number" class="form-control" value="<%= permisos %>" id="permisos" name="permisos" hidden>
                                             </div>
                                             <button type="submit" class="btn btn-primary m-b-10">EDITAR ETAPA</button>
                                         </div>
