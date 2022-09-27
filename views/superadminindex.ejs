@@ -60,7 +60,7 @@
                                             <% depositos.forEach((deposito)=>{%>
                                                 <tr>
                                                     <td><%= deposito.folio %></td>
-                                                    <td><%= deposito.clave %></td>
+                                                    <td onclick="go2Clave('<%= userName.folio %>', '<%= deposito.folio_clave %>')" style="cursor: pointer;"><%= deposito.clave %></td>
                                                     <td>$<%= deposito.monto.toFixed(2) %></td>
                                                     <td><%= deposito.nombre_proyecto %></td>
                                                     <td>
@@ -138,8 +138,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
                 </div>
             </div>
         </div>
@@ -222,6 +220,9 @@
                 window.location = ruta
             }
         })
+    }
+        function go2Clave(usuario, clave){
+        window.location = `/seguimientoClaves?usuario=${usuario}&clave=${clave}`;
     }
     </script>
 <%- include('partials/scriptsNav.ejs') %> 

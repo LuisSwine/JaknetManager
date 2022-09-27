@@ -293,3 +293,20 @@ function showError(res, titulo, mensaje, ruta){
             return next()
         }
     }
+
+//INVENTARIO POR PROYECTO
+    exports.selectInventProyecto = async(req, res, next)=>{
+        try {
+            conexion.query("SELECT * FROM material_proyecto_view001 WHERE folio_proyecto = ?", [req.query.proyecto], (error, fila)=>{
+                if(error){
+                    throw error
+                }else{
+                    req.inventario = fila
+                    return next()
+                }
+            })
+        } catch (error) {
+            console.log(error)
+            return next()
+        }
+    }

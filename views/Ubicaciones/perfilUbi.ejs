@@ -236,15 +236,19 @@
                                                                         <div class="btn-group btn-group-justified">
                                                                             <% if(user.tipo_usuario != 2){%>
                                                                             <% let rutaProyecto = ''
-                                                                            let rutaViaticos = '' 
+                                                                            let rutaViaticos = ''
+                                                                            let rutaInventario = '' 
                                                                             if(flag == 1){
                                                                                 rutaProyecto = `/profileProyect?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${clienteSelected}&flag=2`;
-                                                                                rutaViaticos = `/proyectViaticos?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${clienteSelected}&flag=2`
+                                                                                rutaViaticos = `/proyectViaticos?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${clienteSelected}&flag=2`;
+                                                                                rutaInventario = `/proyectosInvent?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${clienteSelected}&flag=2`
                                                                             }else if(flag==0){
                                                                                 rutaProyecto = `/profileProyect?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${ubicacion[0].folio_cliente}&flag=3`;
-                                                                                rutaViaticos = `/proyectViaticos?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${ubicacion[0].folio_cliente}&flag=3`
+                                                                                rutaViaticos = `/proyectViaticos?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${ubicacion[0].folio_cliente}&flag=3`;
+                                                                                rutaInventario = `/proyectosInvent?proyecto=${proyecto.folio}&ubicacion=${ubicacion[0].folio}&cliente=${ubicacion[0].folio_cliente}&flag=3`
                                                                             }%> 
                                                                             <a class="btn btn-info btn-sm" href="<%= rutaProyecto %>" title="CONFIGURACION DEL PROYECTO"><i class="ti-settings"></i></a>
+                                                                            <a class="btn btn-pink btn-sm" href="<%= rutaInventario %>" title="INVENTARIO EN EL PROYECTO"><i class="ti-truck"></i></a>
                                                                             <a class="btn btn-success btn-sm" href="<%= rutaViaticos %>" title="VIATICOS DEL PROYECTO"><i class="ti-money"></i></a>
                                                                             <button class="btn btn-danger btn-sm" onclick="confirmDeleteProyect('<%= proyecto.folio %>', '<%= ubicacion[0].folio %>', '<%= clienteSelected %>', '<%= flag %>')"><i class="ti-trash"></i></button>
                                                                             <% } %>

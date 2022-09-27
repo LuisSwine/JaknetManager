@@ -20,6 +20,7 @@ const cotizacionesController = require('../controllers/cotizacionesController')
 const proyectosController    = require('../controllers/proyectosController')
 const viaticosController     = require('../controllers/viaticosController')
 const usuarioController      = require('../controllers/usuarioController')
+const inventarioController   = require('../controllers/inventarioController')
 
 //MODLUO #0 - INICIO DE SESION
 router.get('/login', (req, res)=>{
@@ -315,6 +316,22 @@ router.post('/login', authController.login)
                 router.get('/deleteDepositoViaticosProyecto', viaticosController.deleteDepositoProyect)
                 //#3.4.4.5.2. ELIMINAR COMPROBANTE
                 router.get('/deleteComprobanteProyecto', viaticosController.deleteComprobanteProyecto)
+        //*- FUNCION #3.4.5. INVENTARIO PROYECTO
+            //#3.4.5.1. ADMINISTRAR INVENTARIO
+            router.get('/proyectosInvent', authController.isAuthenticated, authController.selectProyect, productosController.selectInventProyecto, (req, res)=>{
+                res.render('InventarioProyectos/proyInventario', {user: req.user, proyecto: req.proyecto, inventario: req.inventario, flag: req.query.flag, ubicacion: req.query.ubicacion, cliente: req.query.cliente, permisos: req.query.permisos})
+            })
+            //#3.4.5.2. AGREGAR ELEMENTOS
+                //#3.4.5.2.1. FORMULARIO
+                router.get('/moverInventProy', authController.isAuthenticated, authController.selectProyect, authController.selectInvent, unidadesController.selectUnits, (req,res)=>{
+                    res.render('InventarioProyectos/formAddElements', {user: req.user, proyecto: req.proyecto, inventario: req.inventario, unidades: req.unidades, flag: req.query.flag, ubicacion: req.query.ubicacion, cliente: req.query.cliente, permisos: req.query.permisos})
+                })
+                //#3.4.5.2.2. FUNCION
+                router.post('/addProduct2Proyecto', inventarioController.addProduct2Proyecto)
+            //#3.4.5.3. EDITAR ELEMENTOS
+            router.get('/modificarProyectInvent', inventarioController.modificarInventProy)
+            //#3.4.5.4. REGRESAR TODO AL INVENTARIO
+            router.get('/returnAll2InventProy', inventarioController.returnAll2Invent)
     //SECCION #3.5. TAREAS
         //*- FUNCION #3.5.1. ADMINISTRACION DE TAREAS
             //#3.5.1.1. VISUALICACION DEL DASHBOARD
@@ -685,6 +702,8 @@ router.post('/login', authController.login)
             router.get('/misProyectos', authController.isAuthenticated, proyectosController.selectMisProyectos, (req, res)=>{
                 res.render('Proyectos/misProyectos', {user: req.user, proyectos: req.proyectos})
             })
+
+            
 //FUNCIONES OBSOLETAS PENDIENTES DE REVISION PARA ELIMINARLAS
 router.get('/contactsclient/:folio', authController.isAuthenticated, contactosController.selectContacts, clientController.selectClient, (req, res)=>{
     res.render('Contactos/contactsAdmin', {user: req.user, contactos: req.contactos, cliente: req.cliente, isCliente: true})
