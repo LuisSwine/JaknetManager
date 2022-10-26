@@ -455,8 +455,9 @@ exports.createCotizacionProyecto = async(req, res, next)=>{
         let ubicacion = req.query.ubicacion
         let flag = req.query.flag
         let proyecto = req.query.proyecto
+        let permisos = req.query.permisos
 
-        let ruta = calculateRuta(flag, ubicacion, cliente, proyecto)
+        let ruta = calculateRuta(flag, ubicacion, cliente, proyecto, permisos)
 
         conexion.query("SELECT folio FROM cat006_contactos WHERE cliente = ? LIMIT 1", [cliente], (error2, fila)=>{
             if(error2){
@@ -491,7 +492,7 @@ exports.createCotizacionProyecto = async(req, res, next)=>{
 exports.deleteCotizacion = async(req, res, next)=>{
     try {
         let cotizacion = req.query.folio
-        let ruta = calculateRuta(req.query.flag, req.query.ubicacion, req.query.cliente, req.query.proyecto)
+        let ruta = calculateRuta(req.query.flag, req.query.ubicacion, req.query.cliente, req.query.proyecto, req.query.permisos)
 
         //Validamos que no haya productos
         conexion.query("SELECT * FROM op008_lista_productos WHERE cotizacion = ?", [cotizacion], (err, fila)=>{

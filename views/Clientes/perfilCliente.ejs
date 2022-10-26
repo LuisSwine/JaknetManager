@@ -273,6 +273,7 @@
                                                                     <div class="button-list">
                                                                         <div class="btn-group btn-group-justified">
                                                                             <a class="btn btn-info btn-sm" href="/cotizacionMain?cotizacion=<%= cotizacion.folio %>&cliente=<%= cliente[0].folio %>&flag=6" title="INFORMACION"><i class="ti-settings"></i></a>
+                                                                            <a href="/cotizacionPDF?cotizacion=<%= cotizacion.folio %>" class="btn btn-danger btn-sm" target="_blank" title="Configurar"><i class="ti-file"></i></a>
                                                                             <% if(user.tipo_usuario != 2){%><button class="btn btn-danger btn-sm" onclick="confirmDeleteCoti('<%= cotizacion.folio %>', '<%= cliente[0].folio %>')" title="ELIMINAR COTIZACION"><i class="ti-trash"></i></button><% } %> 
                                                                         </div>
                                                                     </div>

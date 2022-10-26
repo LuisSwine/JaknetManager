@@ -31,7 +31,9 @@
                                 <li class="breadcrumb-item"><a href="/cotizacionMain?cotizacion=<%= cotizacion %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=5">Cotizacion</a></li>
                                 <%}else if(flag == 6){%>
                                 <li class="breadcrumb-item"><a href="/cotizacionMain?cotizacion=<%= cotizacion %>&cliente=<%= cliente %>&flag=<%= flag %>">Cotizacion</a></li>
-                                <%} %> 
+                                <%}else if(flag == 7){ %>
+                                <li class="breadcrumb-item"><a href="/cotizacionMain?cotizacion=<%= cotizacion %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&flag=<%= flag %>&permisos=<%= permisos %>">Cotizacion</a></li> 
+                                <% } %> 
                                 <li class="breadcrumb-item active">Editar Porducto</li>
                             </ol>
                         </div>
@@ -69,6 +71,7 @@
                                                 <input type="number" value="<%= ubicacion %>" class="form-control" id="ubicacion" name="ubicacion" hidden>
                                                 <input type="number" value="<%= cliente %>" class="form-control" id="cliente" name="cliente" hidden>
                                                 <input type="number" value="<%= flag %>" class="form-control" id="flag" name="flag" hidden>
+                                                <input type="number" value="<%= permisos %>" name="permisos" id="permisos" class="form-control" hidden>
                                             </div>
                                             <button type="submit" class="btn btn-primary m-b-10">EDITAR PRODUCTO EN COTIZACION</button>
                                         </div>

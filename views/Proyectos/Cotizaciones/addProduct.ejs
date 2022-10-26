@@ -31,7 +31,9 @@
                                 <li class="breadcrumb-item"><a href="/cotizacionMain?cotizacion=<%= cotizacion %>&ubicacion=<%= ubicacion %>&cliente=<%= cliente %>&flag=5">Cotizacion</a></li>
                                 <%}else if(flag == 6){%>
                                 <li class="breadcrumb-item"><a href="/cotizacionMain?cotizacion=<%= cotizacion %>&cliente=<%= cliente %>&flag=<%= flag %>">Cotizacion</a></li>
-                                <%} %> 
+                                <%}else if(flag == 7){ %>
+                                <li class="breadcrumb-item"><a href="/cotizacionMain?cotizacion=<%= cotizacion %>&proyecto=<%= proyecto %>&cliente=<%= cliente %>&flag=<%= flag %>&permisos=<%= permisos %>">Cotizacion</a></li> 
+                                <% } %> 
                                 <li class="breadcrumb-item active">Añadir Porducto</li>
                             </ol>
                         </div>
@@ -52,7 +54,7 @@
                                         <div class="col-lg-6">
                                             <div class="form-group">
                                                 <label>SELECCIONAR PRODUCTO</label>
-                                                <select class="form-control" name="producto" id="producto" onchange="cambioValores('<%= encodeURIComponent(JSON.stringify(productos)) %>')">
+                                                <select class="form-control" name="producto" id="producto" onchange="cambioDeValores('<%= encodeURIComponent(JSON.stringify(productos)) %>')">
                                                     <option disabled selected>--Seleccione--</option>
                                                     <% productos.forEach((producto)=>{ %>
                                                     <option value="<%= producto.folio %>"><%= producto.descripcion %></option>
@@ -65,7 +67,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>CANTIDAD DE SUPERVISORES</label>
-                                                <input type="number" class="form-control" id="supervisores" name="supervisores" required>
+                                                <input type="number" value="0" class="form-control" id="supervisores" name="supervisores" required>
                                             </div>
                                             <div class="form-group">
                                                 <input type="number" value="<%= cotizacion %>" class="form-control" id="cotizacion" name="cotizacion" hidden>
@@ -73,6 +75,7 @@
                                                 <input type="number" value="<%= ubicacion %>" class="form-control" id="ubicacion" name="ubicacion" hidden>
                                                 <input type="number" value="<%= cliente %>" class="form-control" id="cliente" name="cliente" hidden>
                                                 <input type="number" value="<%= flag %>" class="form-control" id="flag" name="flag" hidden>
+                                                <input type="number" value="<%= permisos %>" name="permisos" id="permisos" class="form-control" hidden>
                                             </div>
                                             <button type="submit" class="btn btn-primary m-b-10">AÑADIR A COTIZACION</button>
                                         </div>
@@ -83,11 +86,11 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>CANTIDAD DE TECNICOS</label>
-                                                <input type="number" class="form-control" id="tecnicos" name="tecnicos" required>
+                                                <input type="number" value="0" class="form-control" id="tecnicos" name="tecnicos" required>
                                             </div>
                                             <div class="form-group">
                                                 <label>CANTIDAD DE DIAS</label>
-                                                <input type="number" class="form-control" id="dias" name="dias" required>
+                                                <input type="number" value="0" class="form-control" id="dias" name="dias" required>
                                             </div>
                                         </div>
                                     </div>
@@ -102,7 +105,8 @@
 </div>
 
 <script>
-    function cambioValores(objeto){
+    function cambioDeValores(objeto){
+        console.log('cambiando valores')
         let valor = JSON.parse(decodeURIComponent(objeto))
         let selected = document.getElementById('producto').value
         let precio = 0

@@ -36,7 +36,6 @@ router.post('/login', authController.login)
     //*- FUNCION #1.2. CONTROL DE ASISTENCIA
         //#1.2.1. FUNCION PARA REGISTRAR ASISTENCIA
         router.get('/registrarAsistencia', usuarioController.resgistrarAsistencia)
-
 //MODULO #2 - USUARIOS
     //SECCION #2.1. PERFIL
         //*-Funcion #2.1.1. Perfil del usuario
@@ -44,6 +43,14 @@ router.post('/login', authController.login)
             router.get('/miPerfil', authController.isAuthenticated, (req, res)=>{
                 res.render('miPerfil', {user: req.user})
             })
+            //#2.1.1.2. Cambiar Nombre y Apellidos del usuario
+            router.get('/changeNameUserPro', usuarioController.changeNombreUsuario)
+            //#2.1.1.3. Cambiar Telefono
+            router.get('/changeTelUserPro', usuarioController.changeTelUsuario)
+            //#2.1.1.4. Cambiar Email
+            router.get('/changeMailUserPro', usuarioController.changeMailUsuario)
+            //#2.1.1.5. Cambiar Contraseña
+            router.get('/changeContraUserPro', usuarioController.changePassUser)
     //SECCION #2.2. LISTA DE USUARIOS
         //*-Funcion #2.2.1. Visualizar Usuarios
             //#2.2.1.1. TABLA DE USUARIOS
@@ -73,6 +80,9 @@ router.post('/login', authController.login)
             router.get('/generarReporteAsistencia', authController.isAuthenticated, authController.reporteGeneralAsistencia, (req, res)=>{
                 res.render('Usuarios/reporteAsistencia', {user: req.user, asistencias: req.asistencias})
             })
+        //*- FUNCION #2.2.5. CAMBIAR CONTRASEÑA
+            //#2.2.5.1. FUNCION QUE CAMBIA LA CONTRASEÑA
+            router.get('/changeContraUserAdmin', usuarioController.changePassUserAdmin)
 
 //MODULO #3 - PROYECTOS
     //SECCION #3.1. CLIENTES
@@ -649,7 +659,7 @@ router.post('/login', authController.login)
         //*- FUNCION #11.1.1. PAGINA DE COTIZACION
             //#11.1.1.1. PAGINA PRINCIPAL
             router.get('/cotizacionMain', authController.isAuthenticated, clientController.selectClient, cotizacionesController.selectCotizacion, cotizacionesController.selectProductosCotizacion, cotizacionesController.selectServiciosCotizacion, (req, res)=>{
-                res.render('Proyectos/Cotizaciones/mainCotizacion', {user: req.user, clienteSelected: req.cliente, cotizacion: req.cotizacion, costoPersonal: req.costoPersonal, subtotal_productos: req.subtotal_productos, subtotal_servicios: req.subtotal_servicios, subtotal: req.subtotal, total: req.total, productos: req.productos, servicios: req.servicios, proyecto: req.query.proyecto, flag: req.query.flag, cliente: req.query.cliente, ubicacion: req.query.ubicacion})
+                res.render('Proyectos/Cotizaciones/mainCotizacion', {user: req.user, clienteSelected: req.cliente, cotizacion: req.cotizacion, costoPersonal: req.costoPersonal, subtotal_productos: req.subtotal_productos, subtotal_servicios: req.subtotal_servicios, subtotal: req.subtotal, total: req.total, productos: req.productos, servicios: req.servicios, proyecto: req.query.proyecto, flag: req.query.flag, cliente: req.query.cliente, ubicacion: req.query.ubicacion, permisos: req.query.permisos})
             })
         //*- FUNCION #11.1.2. EDITAR VALORES DE LA COTIZACION
             //#11.1.2.1. DEFINIR TASA DE RENDIMIENTO
@@ -664,14 +674,14 @@ router.post('/login', authController.login)
             //#11.1.3.1. AGREGAR PRODUCTOS
                 //#11.1.3.1.1. FORMULARIO
                 router.get('/formaddproduct', authController.isAuthenticated, productosController.selectProducts, (req, res)=>{
-                    res.render('Proyectos/Cotizaciones/addProduct', {user: req.user, productos: req.productos, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag})
+                    res.render('Proyectos/Cotizaciones/addProduct', {user: req.user, productos: req.productos, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag, permisos: req.query.permisos})
                 })
                 //#11.1.3.1.2. FUNCION
                 router.post('/addProductCot', cotizacionesController.addProducto)
             //#11.1.3.2. EDITAR PRODUCTO
                 //#11.1.3.2.1. FORMULARIO
                 router.get('/editarProductoCotizacion', authController.isAuthenticated, cotizacionesController.selectProductoCoti, (req, res)=>{
-                    res.render('Proyectos/Cotizaciones/editProduct', {user: req.user, producto: req.producto, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.ubicacion, cliente: req.query.cliente, flag: req.query.flag})
+                    res.render('Proyectos/Cotizaciones/editProduct', {user: req.user, producto: req.producto, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag, permisos: req.query.permisos})
                 })
                 //#11.1.3.2.2. FUNCION
                 router.post('/editPorductCot', cotizacionesController.editarProductoCoti)
@@ -681,20 +691,45 @@ router.post('/login', authController.login)
             //#11.1.4.1. AGREGAR SERVICIOS
                 //#11.1.4.1.1. FORMULARIO
                 router.get('/formaddservice', authController.isAuthenticated, serviciosController.selectServicios, (req, res)=>{
-                    res.render('Proyectos/Cotizaciones/addService', {user: req.user, servicios: req.servicios, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.ubicacion, cliente: req.query.cliente, flag: req.query.flag})
+                    res.render('Proyectos/Cotizaciones/addService', {user: req.user, servicios: req.servicios, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag, permisos: req.query.permisos})
                 })
                 //#11.1.4.1.2. FUNCION
                 router.post('/addServiceCot', cotizacionesController.addService)
             //#11.1.4.2. EDITAR SERVICIOS
                 //#11.1.4.2.1. FORMULARIO
                 router.get('/editarServicioCotizacion', authController.isAuthenticated, cotizacionesController.selectServicioCoti, (req, res)=>{
-                    res.render('Proyectos/Cotizaciones/editService', {user: req.user, servicio: req.servicio, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.ubicacion, cliente: req.query.cliente, flag: req.query.flag})
+                    res.render('Proyectos/Cotizaciones/editService', {user: req.user, servicio: req.servicio, cotizacion: req.query.cotizacion, proyecto: req.query.proyecto, ubicacion: req.query.ubicacion, cliente: req.query.cliente, flag: req.query.flag, permisos: req.query.permisos})
                 })
                 //#11.1.4.2.2. FUNCION
                 router.post('/editServiceCot', cotizacionesController.editarServicioCoti)
             //#11.1.4.3. ELIMINAR SERVICIO - FUNCION
             router.get('/deleteServiceCot', cotizacionesController.deleteServiceCot)
-    
+    //SECCION #11.2 - GENERACION DE PDF PARA DESCARGAR
+        //#FUNCION #11.2.1. PAGINA DE CONFIGURACION
+            //#11.2.1.1. RUTA PARA CONFIGURAR LA COTIZACION
+            router.get('/cotizacionPDF', authController.isAuthenticated, cotizacionesController.cotizacionPDF, cotizacionesController.selectProductosCotizacion, cotizacionesController.selectServiciosCotizacion, (req, res)=>{
+                res.render('Proyectos/Cotizaciones/generarPDF', {user: req.user, cotizacion: req.registro, productos: req.productos, servicios: req.servicios})
+            })
+            //#11.2.1.2. RUTA PARA DEFNIR EL NUMERO DE COTIZACION
+            router.get('/definirNumeroPDFCotizacion', cotizacionesController.definirNumeroPDFCotizacion)
+            //#11.2.1.3. RUTA PARA DEFNIR EL DESTINATARIO DE COTIZACION
+            router.get('/definirDestinatarioPDFCotizacion', cotizacionesController.definirDestinatarioPDFCotizacion)
+            //#11.2.1.4. RUTA PARA DEFNIR EL PUESTO DEL DESTINATARIO DE COTIZACION
+            router.get('/definirPuestoDestinatarioPDFCotizacion', cotizacionesController.definirPuestoDestinatarioPDFCotizacion)
+            //#11.2.1.5. RUTA PARA DEFNIR EL CLIENTE DE COTIZACION
+            router.get('/definirClientePDFCotizacion', cotizacionesController.definirClientePDFCotizacion)
+            //#11.2.1.6. RUTA PARA DEFNIR LA MONEDA DE COTIZACION
+            router.get('/definirMonedaPDFCotizacion', cotizacionesController.definirMonedaPDFCotizacion)
+            //#11.2.1.7. RUTA PARA DEFNIR LA UBICACION DE COTIZACION
+            router.get('/definirUbicacionPDFCotizacion', cotizacionesController.definirUbicacionPDFCotizacion)
+            //#11.2.1.8. RUTA PARA DEFNIR QUIEN SOLICITA LA COTIZACION
+            router.get('/definirQuienSolicitaPDFCotizacion', cotizacionesController.definirQuienSolicitaPDFCotizacion)
+            //#11.2.1.8. RUTA PARA DEFNIR NOTAS DE LA COTIZACION
+            router.get('/definirNotasPDFCotizacion', cotizacionesController.definirNotasPDFCotizacion)
+            //#11.2.1.9. RUTA PARA CAMBIAR EL EMISOR DE LA COTIZACION
+            router.get('/definirEmisorPDFCotizacion', cotizacionesController.definirEmisorPDFCotizacion)
+            //#11.2.1.10. RUTA PARA UN DESCARGAR PDF
+            router.get('/descargarPDF', cotizacionesController.createPDFCot)
 //MODULO #12 - MIS PROYECTOS
     //SECCION #12.1. - ADMINISTRACION DE MIS PROYECTOS
         //FUNCION #12.1.1. VISUALIZAR PROYECTOS EN LOS QUE EL USUARIO ESTA ACTIVO
@@ -703,7 +738,7 @@ router.post('/login', authController.login)
                 res.render('Proyectos/misProyectos', {user: req.user, proyectos: req.proyectos})
             })
 
-            
+
 //FUNCIONES OBSOLETAS PENDIENTES DE REVISION PARA ELIMINARLAS
 router.get('/contactsclient/:folio', authController.isAuthenticated, contactosController.selectContacts, clientController.selectClient, (req, res)=>{
     res.render('Contactos/contactsAdmin', {user: req.user, contactos: req.contactos, cliente: req.cliente, isCliente: true})

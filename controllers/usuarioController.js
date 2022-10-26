@@ -1,4 +1,5 @@
 const conexion = require('../database/db')
+const bcryptjs = require('bcryptjs')
 const {promisify} = require('util')
 const { query } = require('../database/db')
 const { nextTick } = require('process')
@@ -362,6 +363,134 @@ exports.modificarInventPersonal = async(req, res, next)=>{
                 }
             })
         }
+    } catch (error) {
+        console.log(error)
+        return next()
+    }
+}
+
+//Funciones del perfil
+exports.changeNombreUsuario = async(req, res, next)=>{
+    try {
+        let folio = req.query.folio
+        let nombre = req.query.nombre
+        let apellido = req.query.apellido
+
+        conexion.query("UPDATE cat001_usuarios SET nombres = ?, apellidos = ? WHERE folio = ?", [nombre, apellido, folio], (error, fila)=>{
+            if(error){
+                throw error
+            }else{
+                res.redirect(`/miPerfil?usuario=${folio}`)
+                return next()
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return next()
+    }
+}
+
+exports.changeTelUsuario = async(req, res, next)=>{
+    try {
+        let folio = req.query.folio
+        let telefono = req.query.telefono
+
+        conexion.query("UPDATE cat001_usuarios SET telefono = ? WHERE folio = ?", [telefono, folio], (error, fila)=>{
+            if(error){
+                throw error
+            }else{
+                res.redirect(`/miPerfil?usuario=${folio}`)
+                return next()
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return next()
+    }
+}
+
+exports.changeMailUsuario = async(req, res, next)=>{
+    try {
+        let folio = req.query.folio
+        let email = req.query.email
+
+        conexion.query("UPDATE cat001_usuarios SET email = ? WHERE folio = ?", [email, folio], (error, fila)=>{
+            if(error){
+                throw error
+            }else{
+                res.redirect(`/miPerfil?usuario=${folio}`)
+                return next()
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return next()
+    }
+}
+
+exports.changePassUser = async(req, res, next)=>{
+    try {
+        let folio = req.query.folio
+        let actual = req.query.actual
+        let nueva = req.query.nueva
+
+        //Primero consultamos la contraseña ya registrada
+        conexion.query("SELECT pass FROM cat001_usuarios WHERE folio = ?", [folio], async(error, fila)=>{
+            if(error){
+                throw error
+            }else{
+                let contra = fila[0].pass
+                if(!(await bcryptjs.compare(actual, contra))){
+                    showError(res, 'Error al cambiar', 'Contraseñas Actuales no coinciden', `/miPerfil?usuario=${folio}`)
+                    return next()
+                }else{
+                    let nuevaPass = await bcryptjs.hash(nueva, 8)
+                    conexion.query("UPDATE cat001_usuarios SET pass = ? WHERE folio = ?", [nuevaPass, folio], (error2, fila2)=>{
+                        if(error2){
+                            throw error2
+                        }else{
+                            res.redirect( `/miPerfil?usuario=${folio}`)
+                            return next()
+                        }
+                    })
+                }
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return next()
+    }
+}
+
+exports.changePassUserAdmin = async(req, res, next)=>{
+    try {
+        let folioUser = req.query.folioUser
+        let folioAdmin = req.query.folioAdmin
+        let admin = req.query.admin
+        let nueva = req.query.nueva
+
+        //Primero consultamos la contraseña ya registrada
+        conexion.query("SELECT pass FROM cat001_usuarios WHERE folio = ?", [folioAdmin], async(error, fila)=>{
+            if(error){
+                throw error
+            }else{
+                let contraAdmin = fila[0].pass
+                if(!(await bcryptjs.compare(admin, contraAdmin))){
+                    showError(res, 'Error al cambiar', 'Contraseñas de Administrador Incorrecta', `/adminusers`)
+                    return next()
+                }else{
+                    let nuevaPass = await bcryptjs.hash(nueva, 8)
+                    conexion.query("UPDATE cat001_usuarios SET pass = ? WHERE folio = ?", [nuevaPass, folioUser], (error2, fila2)=>{
+                        if(error2){
+                            throw error2
+                        }else{
+                            res.redirect( `/adminusers`)
+                            return next()
+                        }
+                    })
+                }
+            }
+        })
     } catch (error) {
         console.log(error)
         return next()
